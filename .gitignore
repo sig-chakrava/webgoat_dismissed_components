@@ -74,3 +74,4 @@ full_dev_scan_results.json
 sarif_reports/
 jsonfiles/
 logfiles/
+sigint3779/
