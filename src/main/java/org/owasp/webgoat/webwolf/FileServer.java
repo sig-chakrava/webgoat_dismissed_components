@@ -1,3 +1,20 @@
+File destinationDir = new File(fileLocation, username);
+if (!destinationDir.getCanonicalPath().startsWith(new File(fileLocation).getCanonicalPath())) {
+    throw new SecurityException("Unauthorized access attempt detected.");
+}
+
+ModelAndView modelAndView = new ModelAndView();
+
+var uploadedFiles = new ArrayList<UploadedFile>();
+File[] files = destinationDir.listFiles(File::isFile);
+if (files != null) {
+    for (File file : files) {
+        String size = FileUtils.byteCountToDisplaySize(file.length());
+        String link = String.format("files/%s/%s", username, file.getName());
+        uploadedFiles.add(
+            new UploadedFile(file.getName(), size, link, getCreationTime(timezone, file)));
+    }
+}
 /*
  * SPDX-FileCopyrightText: Copyright © 2017 WebGoat authors
  * SPDX-License-Identifier: GPL-2.0-or-later
