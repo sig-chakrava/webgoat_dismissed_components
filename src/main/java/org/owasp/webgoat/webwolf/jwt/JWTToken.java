@@ -1,3 +1,14 @@
+    }
+    
+    private static boolean validateSignature(String secretKey, String jwt) {
+        if (hasText(secretKey)) {
+            JwtConsumer jwtConsumer =
+                new JwtConsumerBuilder()
+                    .setRequireExpirationTime()
+                    .setVerificationKey(new HmacKey(secretKey.getBytes(UTF_8)))
+                    .setRelaxVerificationKeyValidation()
+                    .build();
+            try {
 /*
  * SPDX-FileCopyrightText: Copyright © 2020 WebGoat authors
  * SPDX-License-Identifier: GPL-2.0-or-later
