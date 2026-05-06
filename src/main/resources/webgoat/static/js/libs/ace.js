@@ -13402,7 +13402,7 @@ Editor.$uid = 0;
                 return;
             }
 
-            if (token.type.indexOf("tag-open") != -1) {
+            if (token && token.type && token.type.indexOf("tag-open") != -1) {
                 token = iterator.stepForward();
                 if (!token)
                     return;
@@ -13412,7 +13412,7 @@ Editor.$uid = 0;
             var depth = 0;
             var prevToken = iterator.stepBackward();
 
-            if (prevToken.value == '<'){
+            if (prevToken && prevToken.type && prevToken.value == '<'){
                 do {
                     prevToken = token;
                     token = iterator.stepForward();
@@ -13431,10 +13431,10 @@ Editor.$uid = 0;
                     token = prevToken;
                     prevToken = iterator.stepBackward();
 
-                    if (token && token.value === tag && token.type.indexOf('tag-name') !== -1) {
-                        if (prevToken.value === '<') {
+                    if (token && token.value === tag && token.type && token.type.indexOf('tag-name') !== -1) {
+                        if (prevToken && prevToken.value === '<') {
                             depth++;
-                        } else if (prevToken.value === '</') {
+                        } else if (prevToken && prevToken.value === '</') {
                             depth--;
                         }
                     }
@@ -14568,7 +14568,7 @@ Editor.$uid = 0;
                     token = prevToken;
                     prevToken = iterator.stepBackward();
 
-                    if (prevToken) {
+                    if (prevToken && prevToken.type) {
                         if (prevToken.type.indexOf('tag-close') !== -1) {
                             range.setEnd(iterator.getCurrentTokenRow(), iterator.getCurrentTokenColumn() + 1);
                         }
