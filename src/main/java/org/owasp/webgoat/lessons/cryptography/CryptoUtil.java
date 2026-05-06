@@ -39,10 +39,10 @@ public class CryptoUtil {
     KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
     RSAKeyGenParameterSpec kpgSpec =
         new RSAKeyGenParameterSpec(
-            2048, FERMAT_PRIMES[new SecureRandom().nextInt(FERMAT_PRIMES.length)]);
+            3072, RSAKeyGenParameterSpec.F4);
     keyPairGenerator.initialize(kpgSpec);
-    // keyPairGenerator.initialize(2048);
     return keyPairGenerator.generateKeyPair();
+    }
   }
 
   public static String getPrivateKeyInPEM(KeyPair keyPair) {
