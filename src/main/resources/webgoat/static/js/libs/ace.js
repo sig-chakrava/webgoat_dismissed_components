@@ -1,3 +1,15 @@
+(function () {
+
+    this.add = function (name, action, callback) {
+        switch (undefined) {
+          case this.$behaviours:
+              this.$behaviours = {};
+              break;
+          case this.$behaviours[name]:
+              this.$behaviours[name] = {};
+              break;
+        }
+        this.$behaviours[name][action] = callback;
 /* ***** BEGIN LICENSE BLOCK *****
  * Distributed under the BSD license:
  *
