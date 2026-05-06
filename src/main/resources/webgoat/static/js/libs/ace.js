@@ -11087,7 +11087,7 @@ EditSession.$uid = 0;
                     continue;
                 }
                 split = lastSplit + wrapLimit;
-                for (split; split < tokens.length; split++) {
+                for (; split < tokens.length; split++) {
                     if (tokens[split] != PLACEHOLDER_BODY) {
                         break;
                     }
