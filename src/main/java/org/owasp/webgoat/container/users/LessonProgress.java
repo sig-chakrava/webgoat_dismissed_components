@@ -1,3 +1,17 @@
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import org.owasp.webgoat.container.lessons.Lesson;
+
+@Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class LessonProgress {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @EqualsAndHashCode.Include
+  private Long id;
+
+  @Getter private String lessonName;
 /*
  * SPDX-FileCopyrightText: Copyright © 2008 WebGoat authors
  * SPDX-License-Identifier: GPL-2.0-or-later
