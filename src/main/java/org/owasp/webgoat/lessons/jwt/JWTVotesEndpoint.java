@@ -112,26 +112,26 @@ public class JWTVotesEndpoint implements AssignmentEndpoint {
               .signWith(io.jsonwebtoken.SignatureAlgorithm.HS512, JWT_PASSWORD)
               .compact();
       Cookie cookie = new Cookie("access_token", token);
+      cookie.setHttpOnly(true);
+      cookie.setSecure(true);
+      cookie.setPath("/");
+    cookie.setDomain("yourdomain.com");
+      cookie.setAttribute("SameSite", "Strict");
       response.addCookie(cookie);
       response.setStatus(HttpStatus.OK.value());
       response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     } else {
-      Cookie cookie = new Cookie("access_token", "");
-      response.addCookie(cookie);
-      response.setStatus(HttpStatus.UNAUTHORIZED.value());
-      response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-    }
-  }
-
-  @GetMapping("/JWT/votings")
-  @ResponseBody
-  public MappingJacksonValue getVotes(
-      @CookieValue(value = "access_token", required = false) String accessToken) {
-    MappingJacksonValue value =
-        new MappingJacksonValue(
-            votes.values().stream()
-                .sorted(comparingLong(Vote::getAverage).reversed())
-                .collect(toList()));
+  Cookie cookie = new Cookie("access_token", "");
+cookie.setHttpOnly(true);
+  cookie.setSecure(true);
+  cookie.setPath("/");
+  cookie.setDomain("yourdomain.com");
+      cookie.setAttribute("SameSite", "Strict");
+    response.addCookie(cookie);
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                }
+                }
     if (StringUtils.isEmpty(accessToken)) {
       value.setSerializationView(Views.GuestView.class);
     } else {
