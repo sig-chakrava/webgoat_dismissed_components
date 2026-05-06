@@ -1,3 +1,19 @@
+if (requestedExecutionTime != null
+    && (requestedExecutionTime.isBefore(LocalDateTime.now().minusMinutes(10))
+        || requestedExecutionTime.isAfter(LocalDateTime.now()))) {
+  if ((taskAction.startsWith("sleep") || taskAction.startsWith("ping"))
+      && taskAction.length() < 22) {
+    log.info("about to execute: {}", taskAction);
+    try (BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
+      String line = null;
+      while ((line = in.readLine()) != null) {
+        log.info(line);
+      }
+    } catch (IOException e) {
+      log.error("IO Exception", e);
+    }
+  }
+}
 /*
  * SPDX-FileCopyrightText: Copyright © 2019 WebGoat authors
  * SPDX-License-Identifier: GPL-2.0-or-later
