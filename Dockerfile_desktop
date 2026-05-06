@@ -3,6 +3,12 @@ LABEL name="WebGoat: A deliberately insecure Web Application"
 LABEL maintainer="WebGoat team"
 
 WORKDIR /config
+USER 1000
+FROM lscr.io/linuxserver/webtop:ubuntu-xfce
+LABEL name="WebGoat: A deliberately insecure Web Application"
+LABEL maintainer="WebGoat team"
+
+WORKDIR /config
 
 COPY target/webgoat-*.jar /config/webgoat.jar
 COPY config/desktop/start_webgoat.sh /config/start_webgoat.sh
