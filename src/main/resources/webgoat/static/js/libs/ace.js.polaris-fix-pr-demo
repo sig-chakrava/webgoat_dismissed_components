@@ -1,0 +1,10 @@
+// Polaris SAST Fix PR demo (mock-issue-explainer)
+// Issue: Unreachable, Unused or Dead Code
+// CWE: CWE-398
+// Original file: src/main/resources/webgoat/static/js/libs/ace.js
+// Original line: 325
+// Language: JavaScript
+// Checker: NO_EFFECT
+// In production, the real Issue Explainer service would return a
+// patch that modifies the original file directly to remediate the issue.
+
