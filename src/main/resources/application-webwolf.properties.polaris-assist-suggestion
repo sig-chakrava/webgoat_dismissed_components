@@ -1,0 +1,6 @@
+server.error.include-stacktrace=never
+server.error.path=/error.html
+server.servlet.context-path=${webwolf.context}
+server.port=${webwolf.port}
+server.address=${webwolf.host}
+spring.application.name=WebWolf
