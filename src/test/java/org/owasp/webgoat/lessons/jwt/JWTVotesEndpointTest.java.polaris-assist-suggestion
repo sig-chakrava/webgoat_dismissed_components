@@ -1,0 +1,22 @@
+File: src/test/java/org/owasp/webgoat/lessons/jwt/JWTVotesEndpointTest.java
+Code:
+175         mockMvc
+176             .perform(MockMvcRequestBuilders.get("/JWT/votings").cookie(cookie))
+177             .andExpect(status().isOk())
+178             .andReturn();
+179     nodes = new ObjectMapper().readValue(result.getResponse().getContentAsString(), Object[].class);
+180     Map<String, Object> node = findNodeByTitle(nodes, "Admin lost password");
+181     assertThat(node).isNotNull();
+182     int numberOfVotes = (int) node.get("numberOfVotes");
+183     assertThat(numberOfVotes).isEqualTo(currentNumberOfVotes + 1);
+184   }
+185 
+186   private Map<String, Object> findNodeByTitle(Object[] nodes, String title) {
+187     for (Object n : nodes) {
+188       Map<String, Object> node = (Map<String, Object>) n;
+189       if (node.get("title").equals(title)) {
+190         return node;
+191       }
+192     }
+193     return null;
+194   }
