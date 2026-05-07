@@ -1,0 +1,23 @@
+}
+41 
+42   @PostMapping("/SqlInjection/attack9")
+43   @ResponseBody
+44   public AttackResult completed(@RequestParam String name, @RequestParam String auth_tan) {
+45     return injectableQueryIntegrity(name, auth_tan);
+46   }
+47 
+48   protected AttackResult injectableQueryIntegrity(String name, String auth_tan) {
+49     StringBuilder output = new StringBuilder();
+50     String queryInjection = "SELECT * FROM users WHERE name = ? AND auth_tan = ?";
+51     try (Connection connection = dataSource.getConnection();
+52          PreparedStatement preparedStatement = connection.prepareStatement(queryInjection)) {
+53       preparedStatement.setString(1, name);
+54       preparedStatement.setString(2, auth_tan);
+55       ResultSet resultSet = preparedStatement.executeQuery();
+56       while (resultSet.next()) {
+57         output.append(resultSet.getString("username")).append("\n");
+58       }
+59     } catch (SQLException e) {
+60       return AttackResult.failed("Error: " + e.getMessage());
+61     }
+62     return AttackResult.success(output.toString());
