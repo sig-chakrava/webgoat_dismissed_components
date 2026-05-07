@@ -1,0 +1,9 @@
+  public static KeyPair generateKeyPair()
+      throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+    RSAKeyGenParameterSpec kpgSpec =
+        new RSAKeyGenParameterSpec(
+            4096, RSAKeyGenParameterSpec.F4);
+    keyPairGenerator.initialize(kpgSpec);
+    return keyPairGenerator.generateKeyPair();
+  }
