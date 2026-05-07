@@ -1,0 +1,4 @@
+File destinationDir = new File(fileLocation, username);
+if (!destinationDir.getCanonicalPath().startsWith(new File(fileLocation).getCanonicalPath())) {
+  throw new SecurityException("Potential Directory Traversal attack detected.");
+}
