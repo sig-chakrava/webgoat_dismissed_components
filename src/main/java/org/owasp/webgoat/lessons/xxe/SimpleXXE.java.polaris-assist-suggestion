@@ -1,0 +1,16 @@
+File: src/main/java/org/owasp/webgoat/lessons/xxe/SimpleXXE.java
+Code:
+50   public AttackResult createNewComment(
+51       @RequestBody String commentStr, @CurrentUser WebGoatUser user) {
+52     String error = "";
+53     try {
+54       var factory = javax.xml.parsers.DocumentBuilderFactory.newInstance();
+55       factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+56       var builder = factory.newDocumentBuilder();
+57       var document = builder.parse(new java.io.ByteArrayInputStream(commentStr.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+58       var comment = comments.parseDocument(document);
+59       comments.addComment(comment, user, false);
+60       if (checkSolution(comment)) {
+61         return success(this).build();
+62       }
+63     } catch (Exception e) {
