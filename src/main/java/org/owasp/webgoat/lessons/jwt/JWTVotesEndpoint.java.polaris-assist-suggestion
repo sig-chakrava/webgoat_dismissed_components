@@ -1,0 +1,22 @@
+File: src/main/java/org/owasp/webgoat/lessons/jwt/JWTVotesEndpoint.java
+Code:
+115       cookie.setHttpOnly(true);
+116       cookie.setSecure(true);
+117       cookie.setPath("/");
+118       cookie.setDomain("example.com");
+119       cookie.setSameSite("Lax");
+120       response.addCookie(cookie);
+121       response.setStatus(HttpStatus.OK.value());
+122       response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+123     } else {
+124       Cookie cookie = new Cookie("access_token", "");
+125       cookie.setHttpOnly(true);
+126       cookie.setSecure(true);
+127       cookie.setPath("/");
+128       cookie.setDomain("example.com");
+129       cookie.setSameSite("Strict");
+130       response.addCookie(cookie);
+131       response.setStatus(HttpStatus.UNAUTHORIZED.value());
+132       response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+133     }
+134   }
