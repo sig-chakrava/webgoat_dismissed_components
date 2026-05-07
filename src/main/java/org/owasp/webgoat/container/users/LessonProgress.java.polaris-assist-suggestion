@@ -1,0 +1,24 @@
+import lombok.Getter;
+import org.owasp.webgoat.container.lessons.Lesson;
+
+@Entity
+public class LessonProgress {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  @Getter private String lessonName;
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) return true;
+    if (obj == null || getClass() != obj.getClass()) return false;
+    LessonProgress that = (LessonProgress) obj;
+    return lessonName != null && lessonName.equals(that.lessonName);
+  }
+
+  @Override
+  public int hashCode() {
+    return lessonName != null ? lessonName.hashCode() : 0;
+  }
