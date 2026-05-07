@@ -1,0 +1,13 @@
+File: src/main/resources/application-webgoat.properties
+Code:
+36 webgoat.server.directory=${user.home}/.webgoat-${webgoat.build.version}/
+37 webgoat.user.directory=${user.home}/.webgoat-${webgoat.build.version}/
+38 webgoat.build.version=@project.version@
+39 webgoat.database.connection.string=jdbc:hsqldb:mem:{USER}
+40 webgoat.default.language=en
+41 webgoat.url=https://${server.address}:${server.port}${server.servlet.context-path}
+42 
+43 webwolf.host=127.0.0.1
+44 webwolf.port=9090
+45 webwolf.context=/WebWolf
+46 webwolf.url=https://${webwolf.host}:${webwolf.port}${webwolf.context}
