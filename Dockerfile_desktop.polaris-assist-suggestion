@@ -1,0 +1,6 @@
+FROM lscr.io/linuxserver/webtop:ubuntu-xfce
+LABEL name="WebGoat: A deliberately insecure Web Application"
+LABEL maintainer="WebGoat team"
+
+WORKDIR /config
+USER nonroot
