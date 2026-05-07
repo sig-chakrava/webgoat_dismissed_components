@@ -1,0 +1,24 @@
+87   public ModelAndView getFiles(
+88       HttpServletRequest request, Authentication authentication, TimeZone timezone) {
+89     String username = (null != authentication) ? authentication.getName() : "anonymous";
+90     if (!username.matches("^[a-zA-Z0-9_]+$")) {
+91       throw new IllegalArgumentException("Invalid username format");
+92     }
+93     File destinationDir = new File(fileLocation, username);
+94     if (!destinationDir.getCanonicalPath().startsWith(new File(fileLocation).getCanonicalPath())) {
+95       throw new SecurityException("Potential directory traversal detected");
+96     }
+97 
+98     ModelAndView modelAndView = new ModelAndView();
+103     File[] files = destinationDir.listFiles(File::isFile);
+104     if (files != null) {
+105       for (File file : files) {
+106         String size = FileUtils.byteCountToDisplaySize(file.length());
+107         String link = String.format("files/%s/%s", username, file.getName());
+108         uploadedFiles.add(
+109             new UploadedFile(file.getName(), size, link, getCreationTime(timezone, file)));
+110       }
+111     }
+112 
+113     modelAndView.addObject(
+122       FileTime creationTime = (FileTime) Files.getAttribute(file.toPath(), "creationTime");
