@@ -42,23 +42,23 @@ public class CSRFFeedback implements AssignmentEndpoint {
       value = "/csrf/feedback/message",
       produces = {"application/json"})
   @ResponseBody
-  public AttackResult completed(HttpServletRequest request, @RequestBody String feedback) {
-    try {
-      objectMapper.enable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
-      objectMapper.enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES);
-      objectMapper.enable(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS);
-      objectMapper.enable(DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY);
-      objectMapper.enable(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES);
-      objectMapper.enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
-      objectMapper.readValue(feedback.getBytes(), Map.class);
-    } catch (IOException e) {
-      return failed(this).feedback(ExceptionUtils.getStackTrace(e)).build();
-    }
-    boolean correctCSRF =
-        requestContainsWebGoatCookie(request.getCookies())
-            && request.getContentType().contains(MediaType.TEXT_PLAIN_VALUE);
-    correctCSRF &= hostOrRefererDifferentHost(request);
-    if (correctCSRF) {
+public AttackResult completed(HttpServletRequest request, @RequestBody String feedback) {
+try {
+objectMapper.enable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
+objectMapper.enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES);
+objectMapper.enable(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS);
+objectMapper.enable(DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY);
+objectMapper.enable(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES);
+objectMapper.enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
+Map<String, Object> allowedData = objectMapper.readValue(feedback.getBytes(), new TypeReference<Map<String, Object>>() {});
+if (!allowedData.containsKey("expectedKey") || !(allowedData.get("expectedKey") instanceof String)) {
+throw new InvalidObjectException("Input data does not meet required constraints.");
+}
+} catch (IOException | InvalidObjectException e) {
+return failed(this).feedback(ExceptionUtils.getStackTrace(e)).build();
+}
+boolean correctCSRF =
+requestContainsWebGoatCookie(request.getCookies())
       String flag = UUID.randomUUID().toString();
       userSessionData.setValue("csrf-feedback", flag);
       return success(this).feedback("csrf-feedback-success").feedbackArgs(flag).build();
