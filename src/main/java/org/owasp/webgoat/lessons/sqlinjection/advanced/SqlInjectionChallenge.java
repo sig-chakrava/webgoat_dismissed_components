@@ -1,3 +1,16 @@
+// === Polaris Fix Recommendation: CWE-89 (SQL Injection) ===
+//
+// The query is built with string concatenation over a user-controlled
+// value, which lets an attacker alter the SQL semantics.
+//
+// Recommended remediation: replace string concatenation with
+// PreparedStatement parameter binding.
+//
+//   PreparedStatement stmt = conn.prepareStatement(
+//       "SELECT * FROM users WHERE id = ?");
+//   stmt.setString(1, userId);
+//   ResultSet rs = stmt.executeQuery();
+//
 /*
  * SPDX-FileCopyrightText: Copyright © 2017 WebGoat authors
  * SPDX-License-Identifier: GPL-2.0-or-later
