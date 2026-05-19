@@ -120,17 +120,17 @@ public class JWTToken {
       builder.validToken(false);
     }
     return builder.build();
-  }
+}
 
-  private static boolean validateSignature(String secretKey, String jwt) {
-    if (hasText(secretKey)) {
-      JwtConsumer jwtConsumer =
-          new JwtConsumerBuilder()
-              .setSkipAllValidators()
-              .setVerificationKey(new HmacKey(secretKey.getBytes(UTF_8)))
-              .setRelaxVerificationKeyValidation()
-              .build();
-      try {
+private static boolean validateSignature(String secretKey, String jwt) {
+if (hasText(secretKey)) {
+JwtConsumer jwtConsumer =
+new JwtConsumerBuilder()
+.setRequireExpirationTime()
+.setVerificationKey(new HmacKey(secretKey.getBytes(UTF_8)))
+.setRelaxVerificationKeyValidation()
+.build();
+try {
         jwtConsumer.processToClaims(jwt);
         return true;
       } catch (InvalidJwtException e) {
