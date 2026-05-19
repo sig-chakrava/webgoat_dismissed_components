@@ -1,3 +1,16 @@
+// === Polaris Fix Recommendation: CWE-22 (Path Traversal) ===
+//
+// A request parameter flows directly into a File handle, so an attacker
+// can escape the intended directory using `..` segments.
+//
+// Recommended remediation at the call site:
+//
+//   String name = request.getParameter("name");
+//   if (name == null || name.contains("..") || name.contains("/")) {
+//       throw new SecurityException("invalid path");
+//   }
+//   File f = new File(baseDir, name);
+//
 /*
  * SPDX-FileCopyrightText: Copyright © 2017 WebGoat authors
  * SPDX-License-Identifier: GPL-2.0-or-later
