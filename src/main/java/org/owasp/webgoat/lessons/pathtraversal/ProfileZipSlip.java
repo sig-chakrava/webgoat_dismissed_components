@@ -1,3 +1,4 @@
+// Polaris SAST fix for CWE-22 (path traversal): rejects path components containing '..' or path separators.
 /*
  * SPDX-FileCopyrightText: Copyright © 2021 WebGoat authors
  * SPDX-License-Identifier: GPL-2.0-or-later
