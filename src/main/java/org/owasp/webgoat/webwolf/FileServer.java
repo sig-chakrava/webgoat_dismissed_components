@@ -84,42 +84,42 @@ public class FileServer {
   }
 
   @GetMapping(value = "/files")
-  public ModelAndView getFiles(
-      HttpServletRequest request, Authentication authentication, TimeZone timezone) {
-    String username = (null != authentication) ? authentication.getName() : "anonymous";
-    File destinationDir = new File(fileLocation, username);
+public ModelAndView getFiles(
+HttpServletRequest request, Authentication authentication, TimeZone timezone) {
+String username = (null != authentication) ? authentication.getName() : "anonymous";
+// Ensure the username is sanitized to prevent directory traversal
+username = username.replaceAll("[^a-zA-Z0-9._-]", "_");
+File destinationDir = new File(fileLocation, username);
 
-    ModelAndView modelAndView = new ModelAndView();
-    modelAndView.setViewName("files");
-    File changeIndicatorFile = new File(destinationDir, username + "_changed");
-    if (changeIndicatorFile.exists()) {
-      modelAndView.addObject("uploadSuccess", request.getParameter("uploadSuccess"));
-    }
-    changeIndicatorFile.delete();
+ModelAndView modelAndView = new ModelAndView();
 
-    record UploadedFile(String name, String size, String link, String creationTime) {}
 
-    var uploadedFiles = new ArrayList<UploadedFile>();
-    File[] files = destinationDir.listFiles(File::isFile);
-    if (files != null) {
-      for (File file : files) {
-        String size = FileUtils.byteCountToDisplaySize(file.length());
-        String link = String.format("files/%s/%s", username, file.getName());
-        uploadedFiles.add(
-            new UploadedFile(file.getName(), size, link, getCreationTime(timezone, file)));
-      }
-    }
 
-    modelAndView.addObject(
-        "files",
-        uploadedFiles.stream().sorted(comparing(UploadedFile::creationTime).reversed()).toList());
-    modelAndView.addObject("webwolf_url", "http://" + server + ":" + port + contextPath);
-    return modelAndView;
-  }
 
-  private String getCreationTime(TimeZone timezone, File file) {
-    try {
-      FileTime creationTime = (FileTime) Files.getAttribute(file.toPath(), "creationTime");
+
+
+
+
+File[] files = destinationDir.listFiles(File::isFile);
+if (files != null) {
+for (File file : files) {
+if (!file.getCanonicalPath().startsWith(destinationDir.getCanonicalPath())) {
+continue; // Skip files outside the intended directory
+}
+String size = FileUtils.byteCountToDisplaySize(file.length());
+String link = String.format("files/%s/%s", username, file.getName());
+uploadedFiles.add(
+new UploadedFile(file.getName(), size, link, getCreationTime(timezone, file)));
+}
+}
+
+modelAndView.addObject(
+
+
+
+
+
+FileTime creationTime = (FileTime) Files.getAttribute(file.toPath(), "creationTime");
       ZonedDateTime zonedDateTime = creationTime.toInstant().atZone(timezone.toZoneId());
       return dateTimeFormatter.format(zonedDateTime);
     } catch (IOException e) {
