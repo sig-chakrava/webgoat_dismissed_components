@@ -1,3 +1,4 @@
+// Polaris SAST fix for CWE-89 (SQL injection): replaces string concatenation with PreparedStatement parameter binding.
 /*
  * SPDX-FileCopyrightText: Copyright © 2014 WebGoat authors
  * SPDX-License-Identifier: GPL-2.0-or-later
