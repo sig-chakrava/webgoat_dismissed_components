@@ -90,9 +90,9 @@ public class FileServer {
     File destinationDir = new File(fileLocation, username);
 
     ModelAndView modelAndView = new ModelAndView();
-    modelAndView.setViewName("files");
-    File changeIndicatorFile = new File(destinationDir, username + "_changed");
-    if (changeIndicatorFile.exists()) {
+    if (!destinationDir.getCanonicalPath().startsWith(new File(fileLocation).getCanonicalPath())) {
+    throw new SecurityException("Attempt to access unauthorized directory");
+    }
       modelAndView.addObject("uploadSuccess", request.getParameter("uploadSuccess"));
     }
     changeIndicatorFile.delete();
