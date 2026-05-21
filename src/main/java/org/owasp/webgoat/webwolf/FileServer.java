@@ -103,15 +103,15 @@ public class FileServer {
     File[] files = destinationDir.listFiles(File::isFile);
     if (files != null) {
       for (File file : files) {
-        String size = FileUtils.byteCountToDisplaySize(file.length());
-        String link = String.format("files/%s/%s", username, file.getName());
-        uploadedFiles.add(
-            new UploadedFile(file.getName(), size, link, getCreationTime(timezone, file)));
-      }
+        if (!file.getCanonicalPath().startsWith(destinationDir.getCanonicalPath() + File.separator)) {
+        continue; // Skip files that are outside the intended directory
+        }
+            String size = FileUtils.byteCountToDisplaySize(file.length());
+      String link = String.format("files/%s/%s", username, file.getName());
+    uploadedFiles.add(
+new UploadedFile(file.getName(), size, link, getCreationTime(timezone, file)));
     }
-
-    modelAndView.addObject(
-        "files",
+        }
         uploadedFiles.stream().sorted(comparing(UploadedFile::creationTime).reversed()).toList());
     modelAndView.addObject("webwolf_url", "http://" + server + ":" + port + contextPath);
     return modelAndView;
