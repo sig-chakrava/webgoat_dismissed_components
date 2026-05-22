@@ -91,20 +91,20 @@ public class ProfileUploadRetrieval implements AssignmentEndpoint {
   @ResponseBody
   public ResponseEntity<?> getProfilePicture(HttpServletRequest request) {
     var queryParams = request.getQueryString();
-    if (queryParams != null && (queryParams.contains("..") || queryParams.contains("/"))) {
-      return ResponseEntity.badRequest()
-          .body("Illegal characters are not allowed in the query params");
+    var id = request.getParameter("id");
+      if (id != null && !id.matches("^[a-zA-Z0-9_-]+$")) {
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+    .body("Invalid file identifier.");
     }
-    try {
-      var id = request.getParameter("id");
       var catPicture =
-          new File(catPicturesDirectory, (id == null ? RandomUtils.nextInt(1, 11) : id) + ".jpg");
-
-      if (catPicture.getName().toLowerCase().contains("path-traversal-secret.jpg")) {
-        return ResponseEntity.ok()
-            .contentType(MediaType.parseMediaType(MediaType.IMAGE_JPEG_VALUE))
-            .body(FileCopyUtils.copyToByteArray(catPicture));
-      }
+      new File(catPicturesDirectory, (id == null ? RandomUtils.nextInt(1, 11) : id) + ".jpg");
+          if (catPicture.exists() && catPicture.getCanonicalPath().startsWith(catPicturesDirectory.getCanonicalPath())) {
+return ResponseEntity.ok()
+      .contentType(MediaType.parseMediaType(MediaType.IMAGE_JPEG_VALUE))
+        .body(FileCopyUtils.copyToByteArray(catPicture));
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+      .body("File not found.");
       if (catPicture.exists()) {
         return ResponseEntity.ok()
             .contentType(MediaType.parseMediaType(MediaType.IMAGE_JPEG_VALUE))
