@@ -94,18 +94,18 @@ public class SqlInjectionLesson10 implements AssignmentEndpoint {
   }
 
   private boolean tableExists(Connection connection) {
-    try {
+    try (
       Statement stmt =
           connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-      ResultSet results = stmt.executeQuery("SELECT * FROM access_log");
+      ResultSet results = stmt.executeQuery("SELECT * FROM access_log")
+      ) {
       int cols = results.getMetaData().getColumnCount();
-      return (cols > 0);
-    } catch (SQLException e) {
+    return (cols > 0);
+      } catch (SQLException e) {
       String errorMsg = e.getMessage();
-      if (errorMsg.contains("object not found: ACCESS_LOG")) {
-        return false;
-      } else {
-        return true;
+        if (errorMsg.contains("object not found: ACCESS_LOG")) {
+      return false;
+        } else {
       }
     }
   }
