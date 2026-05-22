@@ -13402,17 +13402,17 @@ Editor.$uid = 0;
                 return;
             }
 
-            if (token.type.indexOf("tag-open") != -1) {
+            if (token && token.type.indexOf("tag-open") != -1) {
                 token = iterator.stepForward();
                 if (!token)
                     return;
             }
 
-            var tag = token.value;
+            var tag = token ? token.value : null;
             var depth = 0;
             var prevToken = iterator.stepBackward();
 
-            if (prevToken.value == '<'){
+            if (prevToken && prevToken.value == '<') {
                 do {
                     prevToken = token;
                     token = iterator.stepForward();
