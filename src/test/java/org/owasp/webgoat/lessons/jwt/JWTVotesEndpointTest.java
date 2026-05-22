@@ -165,15 +165,15 @@ public class JWTVotesEndpointTest extends LessonTest {
             /*andDo(print()).*/ andReturn();
     Object[] nodes =
         new ObjectMapper().readValue(result.getResponse().getContentAsString(), Object[].class);
+    if (nodes == null) {
+        throw new IllegalStateException("Received null nodes from response.");
+}
     int currentNumberOfVotes =
         (int) findNodeByTitle(nodes, "Admin lost password").get("numberOfVotes");
-
+        
     mockMvc
         .perform(MockMvcRequestBuilders.post("/JWT/votings/Admin lost password").cookie(cookie))
-        .andExpect(status().isAccepted());
-    result =
-        mockMvc
-            .perform(MockMvcRequestBuilders.get("/JWT/votings").cookie(cookie))
+            .andExpect(status().isAccepted());
             .andExpect(status().isOk())
             .andReturn();
     nodes = new ObjectMapper().readValue(result.getResponse().getContentAsString(), Object[].class);
