@@ -87,17 +87,17 @@ public class FileServer {
   public ModelAndView getFiles(
       HttpServletRequest request, Authentication authentication, TimeZone timezone) {
     String username = (null != authentication) ? authentication.getName() : "anonymous";
-    File destinationDir = new File(fileLocation, username);
+    if (!username.matches("^[a-zA-Z0-9_\\-]+$")) {
+throw new IllegalArgumentException("Invalid username");
+    }
+    File destinationDir = new File(fileLocation, username).getCanonicalFile();
+    File baseDir = new File(fileLocation).getCanonicalFile();
+    
+      if (!destinationDir.getPath().startsWith(baseDir.getPath())) {
+    throw new SecurityException("Directory traversal attempt detected");
+    }
 
     ModelAndView modelAndView = new ModelAndView();
-    modelAndView.setViewName("files");
-    File changeIndicatorFile = new File(destinationDir, username + "_changed");
-    if (changeIndicatorFile.exists()) {
-      modelAndView.addObject("uploadSuccess", request.getParameter("uploadSuccess"));
-    }
-    changeIndicatorFile.delete();
-
-    record UploadedFile(String name, String size, String link, String creationTime) {}
 
     var uploadedFiles = new ArrayList<UploadedFile>();
     File[] files = destinationDir.listFiles(File::isFile);
