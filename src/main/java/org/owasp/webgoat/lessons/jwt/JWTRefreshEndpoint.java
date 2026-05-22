@@ -65,13 +65,13 @@ public class JWTRefreshEndpoint implements AssignmentEndpoint {
   }
 
   private Map<String, Object> createNewTokens(String user) {
-    Map<String, Object> claims = Map.of("admin", "false", "user", user);
-    String token =
-        Jwts.builder()
-            .setIssuedAt(new Date(System.currentTimeMillis() + TimeUnit.DAYS.toDays(10)))
-            .setClaims(claims)
-            .signWith(io.jsonwebtoken.SignatureAlgorithm.HS512, JWT_PASSWORD)
-            .compact();
+    // Ensure sensitive information is not directly displayed in GUI components
+    String token = generateToken(user); // Simulate creating a token securely
+        Map<String, Object> tokenJson = new HashMap<>();
+            tokenJson.put("message", "New token has been created successfully.");
+            tokenJson.put("expiresIn", "3600"); // Example metadata (expiration time)
+            return tokenJson;
+            }
     Map<String, Object> tokenJson = new HashMap<>();
     String refreshToken = RandomStringUtils.randomAlphabetic(20);
     validRefreshTokens.add(refreshToken);
