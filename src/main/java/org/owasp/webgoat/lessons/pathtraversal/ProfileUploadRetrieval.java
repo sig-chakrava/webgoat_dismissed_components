@@ -90,24 +90,24 @@ public class ProfileUploadRetrieval implements AssignmentEndpoint {
   @GetMapping("/PathTraversal/random-picture")
   @ResponseBody
   public ResponseEntity<?> getProfilePicture(HttpServletRequest request) {
-    var queryParams = request.getQueryString();
-    if (queryParams != null && (queryParams.contains("..") || queryParams.contains("/"))) {
+    var id = request.getParameter("id");
+    if (id != null && !id.matches("^[a-zA-Z0-9_-]+$")) {
       return ResponseEntity.badRequest()
           .body("Illegal characters are not allowed in the query params");
     }
     try {
-      var id = request.getParameter("id");
-      var catPicture =
-          new File(catPicturesDirectory, (id == null ? RandomUtils.nextInt(1, 11) : id) + ".jpg");
-
-      if (catPicture.getName().toLowerCase().contains("path-traversal-secret.jpg")) {
-        return ResponseEntity.ok()
-            .contentType(MediaType.parseMediaType(MediaType.IMAGE_JPEG_VALUE))
-            .body(FileCopyUtils.copyToByteArray(catPicture));
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid file identifier.");
       }
-      if (catPicture.exists()) {
-        return ResponseEntity.ok()
+          var catPicture =
+new File(catPicturesDirectory, (id == null ? RandomUtils.nextInt(1, 11) : id) + ".jpg");
+      if (catPicture.getName().toLowerCase().contains("path-traversal-secret.jpg")) {
+        if (catPicture.exists() && catPicture.getCanonicalPath().startsWith(new File(catPicturesDirectory).getCanonicalPath())) {
+            return ResponseEntity.ok()
             .contentType(MediaType.parseMediaType(MediaType.IMAGE_JPEG_VALUE))
+      .body(FileCopyUtils.copyToByteArray(catPicture));
+      }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("File not found.");
+            }
             .location(new URI("/PathTraversal/random-picture?id=" + catPicture.getName()))
             .body(Base64.getEncoder().encode(FileCopyUtils.copyToByteArray(catPicture)));
       }
