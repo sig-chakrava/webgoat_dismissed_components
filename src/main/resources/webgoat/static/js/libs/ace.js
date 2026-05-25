@@ -9473,7 +9473,7 @@ function Folding() {
             if (dir != 1) {
                 do {
                     token = iterator.stepBackward();
-                } while (token && re.test(token.type));
+                if (!token) break;
                 iterator.stepForward();
             }
 
@@ -9832,7 +9832,7 @@ function BracketMatch() {
             }
             do {
                 token = iterator.stepBackward();
-            } while (token && !typeRe.test(token.type));
+            if (!token) break;
 
             if (token == null)
                 break;
@@ -13411,11 +13411,11 @@ Editor.$uid = 0;
             var tag = token.value;
             var depth = 0;
             var prevToken = iterator.stepBackward();
-
+if (!prevToken) return;
             if (prevToken.value == '<'){
                 do {
                     prevToken = token;
-                    token = iterator.stepForward();
+                    if (!prevToken) break;
 
                     if (token && token.value === tag && token.type.indexOf('tag-name') !== -1) {
                         if (prevToken.value === '<'){
@@ -13430,7 +13430,7 @@ Editor.$uid = 0;
                 do {
                     token = prevToken;
                     prevToken = iterator.stepBackward();
-
+if (!prevToken) break;
                     if (token && token.value === tag && token.type.indexOf('tag-name') !== -1) {
                         if (prevToken.value === '<') {
                             depth++;
@@ -14567,7 +14567,7 @@ Editor.$uid = 0;
                 do {
                     token = prevToken;
                     prevToken = iterator.stepBackward();
-
+if (!prevToken) break;
                     if (prevToken) {
                         if (prevToken.type.indexOf('tag-close') !== -1) {
                             range.setEnd(iterator.getCurrentTokenRow(), iterator.getCurrentTokenColumn() + 1);
