@@ -55,10 +55,10 @@ public class SqlInjectionLesson8 implements AssignmentEndpoint {
 
     try (Connection connection = dataSource.getConnection()) {
       try {
-        Statement statement =
+        try (Statement statement = 
             connection.createStatement(
                 ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-        log(connection, query);
+        ResultSet results = statement.executeQuery(query)) {
         ResultSet results = statement.executeQuery(query);
 
         if (results.getStatement() != null) {
@@ -81,8 +81,8 @@ public class SqlInjectionLesson8 implements AssignmentEndpoint {
             // no results
             return failed(this).feedback("sql-injection.8.no.results").build();
           }
-        } else {
-          return failed(this).build();
+        }
+          }
         }
       } catch (SQLException e) {
         return failed(this)
