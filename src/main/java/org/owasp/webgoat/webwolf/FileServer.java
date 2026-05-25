@@ -87,26 +87,26 @@ public class FileServer {
   public ModelAndView getFiles(
       HttpServletRequest request, Authentication authentication, TimeZone timezone) {
     String username = (null != authentication) ? authentication.getName() : "anonymous";
-    File destinationDir = new File(fileLocation, username);
-
-    ModelAndView modelAndView = new ModelAndView();
-    modelAndView.setViewName("files");
-    File changeIndicatorFile = new File(destinationDir, username + "_changed");
-    if (changeIndicatorFile.exists()) {
-      modelAndView.addObject("uploadSuccess", request.getParameter("uploadSuccess"));
+    if (!username.matches("^[a-zA-Z0-9._-]+$")) {
+throw new IllegalArgumentException("Invalid username format");
     }
-    changeIndicatorFile.delete();
-
-    record UploadedFile(String name, String size, String link, String creationTime) {}
-
+    File destinationDir = new File(fileLocation, username);
+    if (!destinationDir.getCanonicalPath().startsWith(new File(fileLocation).getCanonicalPath())) {
+    throw new SecurityException("Potential directory traversal attempt detected");
+      }
+    
+    ModelAndView modelAndView = new ModelAndView();
+changeIndicatorFile.delete();
+    
+record UploadedFile(String name, String size, String link, String creationTime) {}
+    
     var uploadedFiles = new ArrayList<UploadedFile>();
     File[] files = destinationDir.listFiles(File::isFile);
-    if (files != null) {
-      for (File file : files) {
+      if (files != null) {
+        for (File file : files) {
         String size = FileUtils.byteCountToDisplaySize(file.length());
         String link = String.format("files/%s/%s", username, file.getName());
-        uploadedFiles.add(
-            new UploadedFile(file.getName(), size, link, getCreationTime(timezone, file)));
+            uploadedFiles.add(
       }
     }
 
