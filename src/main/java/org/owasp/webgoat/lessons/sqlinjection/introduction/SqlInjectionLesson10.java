@@ -50,10 +50,10 @@ public class SqlInjectionLesson10 implements AssignmentEndpoint {
 
     try (Connection connection = dataSource.getConnection()) {
       try {
-        Statement statement =
+        try (Statement statement =
             connection.createStatement(
                 ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-        ResultSet results = statement.executeQuery(query);
+        ResultSet results = statement.executeQuery(query)) {
 
         if (results.getStatement() != null) {
           results.first();
