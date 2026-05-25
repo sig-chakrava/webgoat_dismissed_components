@@ -58,11 +58,11 @@ public class SqlInjectionLesson5 implements AssignmentEndpoint {
   }
 
   protected AttackResult injectableQuery(String query) {
-    try (Connection connection = dataSource.getConnection()) {
-      try (Statement statement =
-          connection.createStatement(
-              ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
-        statement.executeQuery(query);
+    String sql = "SELECT * FROM users WHERE username = ?"; // Example of a parameterized query
+      try (Connection connection = dataSource.getConnection()) {
+          try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+              preparedStatement.setString(1, query);
+        preparedStatement.executeQuery();
         if (checkSolution(connection)) {
           return success(this).build();
         }
