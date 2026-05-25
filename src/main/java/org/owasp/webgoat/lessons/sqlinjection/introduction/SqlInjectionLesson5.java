@@ -59,13 +59,13 @@ public class SqlInjectionLesson5 implements AssignmentEndpoint {
 
   protected AttackResult injectableQuery(String query) {
     try (Connection connection = dataSource.getConnection()) {
-      try (Statement statement =
-          connection.createStatement(
-              ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
-        statement.executeQuery(query);
-        if (checkSolution(connection)) {
-          return success(this).build();
-        }
+      String sql = "YOUR_SAFE_SQL_QUERY_HERE WHERE column = ?";
+          try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+              preparedStatement.setString(1, query);
+        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+        // Process the resultSet as needed
+          }
+        }  
         return failed(this).output("Your query was: " + query).build();
       }
     } catch (Exception e) {
