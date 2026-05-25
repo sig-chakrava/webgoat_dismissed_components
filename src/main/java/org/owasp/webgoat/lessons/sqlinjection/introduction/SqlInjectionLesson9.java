@@ -60,7 +60,7 @@ public class SqlInjectionLesson9 implements AssignmentEndpoint {
       // begin transaction
       connection.setAutoCommit(false);
       // do injectable query
-      Statement statement = connection.createStatement(TYPE_SCROLL_SENSITIVE, CONCUR_UPDATABLE);
+      try (Statement statement = connection.createStatement(TYPE_SCROLL_SENSITIVE, CONCUR_UPDATABLE)) {
       SqlInjectionLesson8.log(connection, queryInjection);
       statement.execute(queryInjection);
       // check new sum of salaries other employees and new salaries of John
@@ -75,12 +75,12 @@ public class SqlInjectionLesson9 implements AssignmentEndpoint {
             SqlInjectionLesson8.generateTable(this.getEmployeesDataOrderBySalaryDesc(connection)));
         return success(this).feedback("sql-injection.9.success").output(output.toString()).build();
       }
-      // failed roolback
+      // failed rollback
       connection.rollback();
       return failed(this)
           .feedback("sql-injection.9.one")
-          .output(
-              SqlInjectionLesson8.generateTable(this.getEmployeesDataOrderBySalaryDesc(connection)))
+          .build();
+              }
           .build();
     } catch (SQLException e) {
       return failed(this)
