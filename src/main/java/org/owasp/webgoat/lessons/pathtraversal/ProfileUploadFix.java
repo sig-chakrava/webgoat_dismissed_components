@@ -40,12 +40,12 @@ public class ProfileUploadFix extends ProfileUploadBase {
       @RequestParam("uploadedFileFix") MultipartFile file,
       @RequestParam(value = "fullNameFix", required = false) String fullName,
       @CurrentUsername String username) {
-    return super.execute(file, fullName != null ? fullName.replace("../", "") : "", username);
-  }
-
+    String sanitizedFullName = fullName != null ? fullName.replaceAll("[^a-zA-Z0-9._-]", "_") : "";
+  return super.execute(file, sanitizedFullName, username);
+}
+  
   @GetMapping("/PathTraversal/profile-picture-fix")
   @ResponseBody
-  public ResponseEntity<?> getProfilePicture(@CurrentUsername String username) {
-    return super.getProfilePicture(username);
+    public ResponseEntity<?> getProfilePicture(@CurrentUsername String username) {
   }
 }
