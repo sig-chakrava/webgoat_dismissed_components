@@ -35,14 +35,14 @@ public class ProfileUpload extends ProfileUploadBase {
       value = "/PathTraversal/profile-upload",
       consumes = ALL_VALUE,
       produces = APPLICATION_JSON_VALUE)
-  @ResponseBody
   public AttackResult uploadFileHandler(
-      @RequestParam("uploadedFile") MultipartFile file,
-      @RequestParam(value = "fullName", required = false) String fullName,
+  @RequestParam("uploadedFileRemoveUserInput") MultipartFile file,
       @CurrentUsername String username) {
-    return super.execute(file, fullName, username);
+      String sanitizedFilename = Paths.get(file.getOriginalFilename())
+      .getFileName().toString();
+    return super.execute(file, sanitizedFilename, username);
   }
-
+}
   @GetMapping("/PathTraversal/profile-picture")
   @ResponseBody
   public ResponseEntity<?> getProfilePicture(@CurrentUsername String username) {
