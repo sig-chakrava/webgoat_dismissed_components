@@ -57,17 +57,17 @@ public class ContentTypeAssignment implements AssignmentEndpoint {
 
     if (null != contentType && contentType.contains(MediaType.APPLICATION_XML_VALUE)) {
       try {
-        Comment comment = comments.parseXml(commentStr, false);
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+          factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        
+      Comment comment = comments.parseXml(commentStr, factory);
         comments.addComment(comment, user, false);
         if (checkSolution(comment)) {
-          attackResult = success(this).build();
-        }
-      } catch (Exception e) {
-        String error = ExceptionUtils.getStackTrace(e);
-        attackResult = failed(this).feedback("xxe.content.type.feedback.xml").output(error).build();
-      }
+      attackResult = success(this).build();
     }
-
+} catch (Exception e) {
     return attackResult;
   }
 
