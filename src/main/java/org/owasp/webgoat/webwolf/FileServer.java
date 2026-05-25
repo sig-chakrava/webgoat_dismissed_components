@@ -87,25 +87,25 @@ public class FileServer {
   public ModelAndView getFiles(
       HttpServletRequest request, Authentication authentication, TimeZone timezone) {
     String username = (null != authentication) ? authentication.getName() : "anonymous";
+    
+if (!username.matches("^[a-zA-Z0-9_]+$")) {
+    throw new IllegalArgumentException("Invalid username format");
+    }
+    
     File destinationDir = new File(fileLocation, username);
-
+      
     ModelAndView modelAndView = new ModelAndView();
     modelAndView.setViewName("files");
-    File changeIndicatorFile = new File(destinationDir, username + "_changed");
+File changeIndicatorFile = new File(destinationDir, username + "_changed");
     if (changeIndicatorFile.exists()) {
-      modelAndView.addObject("uploadSuccess", request.getParameter("uploadSuccess"));
-    }
+modelAndView.addObject("uploadSuccess", request.getParameter("uploadSuccess"));
     changeIndicatorFile.delete();
-
-    record UploadedFile(String name, String size, String link, String creationTime) {}
-
-    var uploadedFiles = new ArrayList<UploadedFile>();
-    File[] files = destinationDir.listFiles(File::isFile);
-    if (files != null) {
-      for (File file : files) {
-        String size = FileUtils.byteCountToDisplaySize(file.length());
-        String link = String.format("files/%s/%s", username, file.getName());
-        uploadedFiles.add(
+    }
+    
+      record UploadedFile(String name, String size, String link, String creationTime) {}
+        
+        var uploadedFiles = new ArrayList<UploadedFile>();
+        File[] files = destinationDir.listFiles(File::isFile);
             new UploadedFile(file.getName(), size, link, getCreationTime(timezone, file)));
       }
     }
