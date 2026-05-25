@@ -13402,17 +13402,17 @@ Editor.$uid = 0;
                 return;
             }
 
-            if (token.type.indexOf("tag-open") != -1) {
+            if (token && token.type.indexOf("tag-open") != -1) {
                 token = iterator.stepForward();
                 if (!token)
                     return;
             }
 
-            var tag = token.value;
+            var tag = token ? token.value : null;
             var depth = 0;
             var prevToken = iterator.stepBackward();
 
-            if (prevToken.value == '<'){
+            if (prevToken && prevToken.value == '<'){
                 do {
                     prevToken = token;
                     token = iterator.stepForward();
@@ -13431,7 +13431,7 @@ Editor.$uid = 0;
                     token = prevToken;
                     prevToken = iterator.stepBackward();
 
-                    if (token && token.value === tag && token.type.indexOf('tag-name') !== -1) {
+                    if (token && prevToken && token.value === tag && token.type.indexOf('tag-name') !== -1) { // Added null checks for token and prevToken
                         if (prevToken.value === '<') {
                             depth++;
                         } else if (prevToken.value === '</') {
