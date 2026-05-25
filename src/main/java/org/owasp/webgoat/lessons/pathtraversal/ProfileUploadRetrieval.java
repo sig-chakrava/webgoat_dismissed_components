@@ -58,32 +58,32 @@ public class ProfileUploadRetrieval implements AssignmentEndpoint {
   @PostConstruct
   public void initAssignment() {
     for (int i = 1; i <= 10; i++) {
-      try (InputStream is =
-          new ClassPathResource("lessons/pathtraversal/images/cats/" + i + ".jpg")
-              .getInputStream()) {
-        FileCopyUtils.copy(is, new FileOutputStream(new File(catPicturesDirectory, i + ".jpg")));
+      InputStream is = null;
+          FileOutputStream fos = null;
+              try {
+        is = new ClassPathResource("lessons/pathtraversal/images/cats/" + i + ".jpg").getInputStream();
+      fos = new FileOutputStream(new File(catPicturesDirectory, i + ".jpg"));
+        FileCopyUtils.copy(is, fos);
       } catch (Exception e) {
-        log.error("Unable to copy pictures" + e.getMessage());
+    log.error("Unable to copy pictures" + e.getMessage());
+    } finally {
+    if (is != null) {
+      try {
+          is.close();
+          } catch (IOException e) {
+    log.error("Failed to close InputStream" + e.getMessage());
       }
     }
+  if (fos != null) {
+try {
+  fos.close();
+  } catch (IOException e) {
+  log.error("Failed to close FileOutputStream" + e.getMessage());
+      }
+      }
+    }
+      }
     var secretDirectory = this.catPicturesDirectory.getParentFile().getParentFile();
-    try {
-      Files.writeString(
-          secretDirectory.toPath().resolve("path-traversal-secret.jpg"),
-          "You found it submit the SHA-512 hash of your username as answer");
-    } catch (IOException e) {
-      log.error("Unable to write secret in: {}", secretDirectory, e);
-    }
-  }
-
-  @PostMapping("/PathTraversal/random")
-  @ResponseBody
-  public AttackResult execute(
-      @RequestParam(value = "secret", required = false) String secret,
-      @CurrentUsername String username) {
-    if (Sha512DigestUtils.shaHex(username).equalsIgnoreCase(secret)) {
-      return success(this).build();
-    }
     return failed(this).build();
   }
 
