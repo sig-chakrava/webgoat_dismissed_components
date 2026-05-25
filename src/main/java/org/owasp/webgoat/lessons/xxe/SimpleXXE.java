@@ -44,32 +44,32 @@ public class SimpleXXE implements AssignmentEndpoint {
   public SimpleXXE(CommentsCache comments) {
     this.comments = comments;
   }
-
-  @PostMapping(path = "xxe/simple", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
-  @ResponseBody
+public AttackResult createNewUser(
+  @RequestBody String commentStr,
+  @RequestHeader("Content-Type") String contentType,
   public AttackResult createNewComment(
       @RequestBody String commentStr, @CurrentUser WebGoatUser user) {
     String error = "";
     try {
       var comment = comments.parseXml(commentStr, false);
-      comments.addComment(comment, user, false);
-      if (checkSolution(comment)) {
-        return success(this).build();
+      attackResult = failed(this).feedback("xxe.content.type.feedback.json").build();
       }
-    } catch (Exception e) {
-      error = ExceptionUtils.getStackTrace(e);
+        
+      if (null != contentType && contentType.contains(MediaType.APPLICATION_XML_VALUE)) {
+    try {
+      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+    dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+  dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+dbf.setXIncludeAware(false);
+  dbf.setExpandEntityReferences(false);
+    
+        Comment comment = comments.parseXmlWithConfiguredFactory(commentStr, dbf);
+            comments.addComment(comment, user, false);
+            if (checkSolution(comment)) {
+    attackResult = success(this).build();
     }
-    return failed(this).output(error).build();
-  }
-
-  private boolean checkSolution(Comment comment) {
-    String[] directoriesToCheck =
-        OS.isFamilyMac() || OS.isFamilyUnix()
-            ? DEFAULT_LINUX_DIRECTORIES
-            : DEFAULT_WINDOWS_DIRECTORIES;
-    boolean success = false;
-    for (String directory : directoriesToCheck) {
-      success |= org.apache.commons.lang3.StringUtils.contains(comment.getText(), directory);
+      } catch (Exception e) {
     }
     return success;
   }
