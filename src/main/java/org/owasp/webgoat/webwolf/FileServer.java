@@ -100,7 +100,7 @@ public class FileServer {
     record UploadedFile(String name, String size, String link, String creationTime) {}
 
     var uploadedFiles = new ArrayList<UploadedFile>();
-    File[] files = destinationDir.listFiles(File::isFile);
+    File[] files = destinationDir.listFiles(file -> file.isFile() && file.getName().matches("^[\\w,\\s-]+\\.[A-Za-z]{3}$"));
     if (files != null) {
       for (File file : files) {
         String size = FileUtils.byteCountToDisplaySize(file.length());
