@@ -11087,11 +11087,11 @@ EditSession.$uid = 0;
                     continue;
                 }
                 split = lastSplit + wrapLimit;
-                for (split; split < tokens.length; split++) {
+                while (split < tokens.length) {
                     if (tokens[split] != PLACEHOLDER_BODY) {
                         break;
                     }
-                }
+                split++;
                 if (split == tokens.length) {
                     break;  // Breaks the while-loop.
                 }
