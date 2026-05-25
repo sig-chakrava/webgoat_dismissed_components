@@ -47,22 +47,22 @@ public class SqlInjectionLesson9 implements AssignmentEndpoint {
 
   protected AttackResult injectableQueryIntegrity(String name, String auth_tan) {
     StringBuilder output = new StringBuilder();
-    String queryInjection =
-        "SELECT * FROM employees WHERE last_name = '"
-            + name
-            + "' AND auth_tan = '"
-            + auth_tan
-            + "'";
-    try (Connection connection = dataSource.getConnection()) {
-      // V2019_09_26_7__employees.sql
-      int oldMaxSalary = this.getMaxSalary(connection);
-      int oldSumSalariesOfOtherEmployees = this.getSumSalariesOfOtherEmployees(connection);
-      // begin transaction
-      connection.setAutoCommit(false);
-      // do injectable query
-      Statement statement = connection.createStatement(TYPE_SCROLL_SENSITIVE, CONCUR_UPDATABLE);
-      SqlInjectionLesson8.log(connection, queryInjection);
-      statement.execute(queryInjection);
+    String queryInjection = "SELECT * FROM users WHERE name = ? AND auth_tan = ?";
+        try (Connection connection = dataSource.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(queryInjection)) {
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, auth_tan);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+    while (resultSet.next()) {
+      output.append(resultSet.getString("name")).append(", ");
+      }
+      }
+      } catch (SQLException e) {
+      e.printStackTrace();
+      return AttackResult.failed("An error occurred while processing your request.");
+      }
+      return AttackResult.success(output.toString());
+      }
       // check new sum of salaries other employees and new salaries of John
       int newJohnSalary = this.getJohnSalary(connection);
       int newSumSalariesOfOtherEmployees = this.getSumSalariesOfOtherEmployees(connection);
