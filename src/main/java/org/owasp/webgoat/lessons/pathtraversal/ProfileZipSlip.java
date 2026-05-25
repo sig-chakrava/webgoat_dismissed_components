@@ -58,14 +58,14 @@ public class ProfileZipSlip extends ProfileUploadBase {
     if (!file.getOriginalFilename().toLowerCase().endsWith(".zip")) {
       return failed(this).feedback("path-traversal-zip-slip.no-zip").build();
     } else {
-      return processZipUpload(file, username);
-    }
+      String sanitizedUsername = username.replaceAll("[^a-zA-Z0-9._-]", "_");
+    return processZipUpload(file, sanitizedUsername);
   }
-
+}
+  
   @SneakyThrows
-  private AttackResult processZipUpload(MultipartFile file, String username) {
+    private AttackResult processZipUpload(MultipartFile file, String username) {
     var tmpZipDirectory = Files.createTempDirectory(username);
-    cleanupAndCreateDirectoryForUser(username);
     var currentImage = getProfilePictureAsBase64(username);
 
     try {
