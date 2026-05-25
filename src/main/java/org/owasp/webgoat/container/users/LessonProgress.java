@@ -22,26 +22,26 @@ import lombok.Getter;
 import org.owasp.webgoat.container.lessons.Lesson;
 
 @Entity
-@EqualsAndHashCode
 public class LessonProgress {
 
-  @Id
+@Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-
-  @Getter private String lessonName;
-
-  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-  private final Set<AssignmentProgress> assignments = new HashSet<>();
-
-  @Getter private int numberOfAttempts = 0;
-  @Version private Integer version;
-
-  protected LessonProgress() {
-    // JPA
+  
+@Getter private String lessonName;
+  
+@Override
+  public boolean equals(Object o) {
+  if (this == o) return true;
+if (o == null || getClass() != o.getClass()) return false;
+  LessonProgress that = (LessonProgress) o;
+  return id != null && id.equals(that.id);
+}
+  
+    @Override
+  public int hashCode() {
+return id != null ? id.hashCode() : 0;
   }
-
-  public LessonProgress(Lesson lesson) {
     lessonName = lesson.getId();
     assignments.addAll(lesson.getAssignments().stream().map(AssignmentProgress::new).toList());
   }
