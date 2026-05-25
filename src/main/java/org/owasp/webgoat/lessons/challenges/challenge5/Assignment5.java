@@ -40,20 +40,20 @@ public class Assignment5 implements AssignmentEndpoint {
       return failed(this).feedback("user.not.larry").feedbackArgs(username_login).build();
     }
     try (var connection = dataSource.getConnection()) {
-      PreparedStatement statement =
+      try (PreparedStatement statement = 
           connection.prepareStatement(
-              "select password from challenge_users where userid = '"
+              "select password from challenge_users where userid = '";
                   + username_login
                   + "' and password = '"
                   + password_login
                   + "'");
-      ResultSet resultSet = statement.executeQuery();
+      ResultSet resultSet = statement.executeQuery()) {
 
       if (resultSet.next()) {
         return success(this).feedback("challenge.solved").feedbackArgs(flags.getFlag(5)).build();
       } else {
         return failed(this).feedback("challenge.close").build();
       }
-    }
-  }
+    } catch (SQLException e) {
+  throw new RuntimeException("Database error occurred", e);
 }
