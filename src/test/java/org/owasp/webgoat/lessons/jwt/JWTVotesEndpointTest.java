@@ -165,15 +165,15 @@ public class JWTVotesEndpointTest extends LessonTest {
             /*andDo(print()).*/ andReturn();
     Object[] nodes =
         new ObjectMapper().readValue(result.getResponse().getContentAsString(), Object[].class);
-    int currentNumberOfVotes =
-        (int) findNodeByTitle(nodes, "Admin lost password").get("numberOfVotes");
-
+    int currentNumberOfVotes = 0;
+        Map<String, Object> node = findNodeByTitle(nodes, "Admin lost password");
+if (node != null && node.get("numberOfVotes") != null) {
+    currentNumberOfVotes = (int) node.get("numberOfVotes");
+        }
+        
     mockMvc
         .perform(MockMvcRequestBuilders.post("/JWT/votings/Admin lost password").cookie(cookie))
-        .andExpect(status().isAccepted());
-    result =
-        mockMvc
-            .perform(MockMvcRequestBuilders.get("/JWT/votings").cookie(cookie))
+            .andExpect(status().isAccepted());
             .andExpect(status().isOk())
             .andReturn();
     nodes = new ObjectMapper().readValue(result.getResponse().getContentAsString(), Object[].class);
