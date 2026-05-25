@@ -29,22 +29,22 @@ public class HashingAssignment implements AssignmentEndpoint {
 
   @RequestMapping(path = "/crypto/hashing/md5", produces = MediaType.TEXT_HTML_VALUE)
   @ResponseBody
-  public String getMd5(HttpServletRequest request) throws NoSuchAlgorithmException {
+  public String getSecureHash(HttpServletRequest request) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
-    String md5Hash = (String) request.getSession().getAttribute("md5Hash");
+    String secureHash = (String) request.getSession().getAttribute("secureHash");
     if (md5Hash == null) {
 
       String secret = SECRETS[new Random().nextInt(SECRETS.length)];
-
-      MessageDigest md = MessageDigest.getInstance("MD5");
-      md.update(secret.getBytes());
-      byte[] digest = md.digest();
-      md5Hash = DatatypeConverter.printHexBinary(digest).toUpperCase();
-      request.getSession().setAttribute("md5Hash", md5Hash);
-      request.getSession().setAttribute("md5Secret", secret);
+byte[] salt = new byte[16];
+      SecureRandom.getInstanceStrong().nextBytes(salt);
+      KeySpec spec = new PBEKeySpec(secret.toCharArray(), salt, 10000, 512);
+      SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
+      byte[] hash = factory.generateSecret(spec).getEncoded();
+      secureHash = DatatypeConverter.printHexBinary(hash).toUpperCase() + ":" + DatatypeConverter.printHexBinary(salt).toUpperCase();
+      request.getSession().setAttribute("secureHash", secureHash);
+    request.getSession().setAttribute("secureSecret", secret);
     }
-    return md5Hash;
-  }
+  return secureHash;
 
   @RequestMapping(path = "/crypto/hashing/sha256", produces = MediaType.TEXT_HTML_VALUE)
   @ResponseBody
