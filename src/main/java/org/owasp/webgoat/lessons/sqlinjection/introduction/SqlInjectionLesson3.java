@@ -34,18 +34,18 @@ public class SqlInjectionLesson3 implements AssignmentEndpoint {
 
   @PostMapping("/SqlInjection/attack3")
   @ResponseBody
-  public AttackResult completed(@RequestParam String query) {
-    return injectableQuery(query);
+  public AttackResult completed(@RequestParam String queryParam) {
+    return injectableQuery(queryParam);
   }
 
-  protected AttackResult injectableQuery(String query) {
+  protected AttackResult injectableQuery(String queryParam) {
     try (Connection connection = dataSource.getConnection()) {
-      try (Statement statement =
-          connection.createStatement(TYPE_SCROLL_INSENSITIVE, CONCUR_READ_ONLY)) {
-        Statement checkStatement =
-            connection.createStatement(TYPE_SCROLL_INSENSITIVE, CONCUR_READ_ONLY);
-        statement.executeUpdate(query);
-        ResultSet results =
+      String sql = "UPDATE table_name SET column_name = ? WHERE condition_column = ?";
+          try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        preparedStatement.setString(1, queryParam);
+            // Add additional preparedStatement.setXXX() calls here for other placeholders in your query
+        int rowsAffected = preparedStatement.executeUpdate();
+        // Process the result (if needed) and return appropriate AttackResult
             checkStatement.executeQuery("SELECT * FROM employees WHERE last_name='Barnett';");
         StringBuilder output = new StringBuilder();
         // user completes lesson if the department of Tobi Barnett now is 'Sales'
