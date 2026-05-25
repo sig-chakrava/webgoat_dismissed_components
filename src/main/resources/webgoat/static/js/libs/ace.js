@@ -11077,7 +11077,7 @@ EditSession.$uid = 0;
                 continue;
             }
             if (tokens[split] == PLACEHOLDER_START || tokens[split] == PLACEHOLDER_BODY) {
-                for (split; split != lastSplit - 1; split--) {
+                for (; split != lastSplit - 1; split--) {
                     if (tokens[split] == PLACEHOLDER_START) {
                         break;
                     }
@@ -11087,7 +11087,7 @@ EditSession.$uid = 0;
                     continue;
                 }
                 split = lastSplit + wrapLimit;
-                for (split; split < tokens.length; split++) {
+                for (; split < tokens.length; split++) {  // Removed redundant initialization of 'split' in the loop
                     if (tokens[split] != PLACEHOLDER_BODY) {
                         break;
                     }
