@@ -97,9 +97,9 @@ public class JWTRefreshEndpoint implements AssignmentEndpoint {
         }
         return ok(success(this).build());
       }
-      return ok(failed(this).feedback("jwt-refresh-not-tom").feedbackArgs(user).build());
+      return ok(failed(this).feedback("jwt-refresh-not-tom").feedbackArgs("User information withheld for security reasons").build());
     } catch (ExpiredJwtException e) {
-      return ok(failed(this).output(e.getMessage()).build());
+      return ok(failed(this).output("Token has expired").build());
     } catch (JwtException e) {
       return ok(failed(this).feedback("jwt-invalid-token").build());
     }
