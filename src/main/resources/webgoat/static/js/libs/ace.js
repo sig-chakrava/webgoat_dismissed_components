@@ -15269,7 +15269,7 @@ function $updateMarkers(delta) {
                     cmp = 1;
                 }
                 else {
-                    point.bias == -1;
+                    point.bias = -1;
                     continue;
                 }
             }
