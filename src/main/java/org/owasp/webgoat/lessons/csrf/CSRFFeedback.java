@@ -50,18 +50,18 @@ public class CSRFFeedback implements AssignmentEndpoint {
       objectMapper.enable(DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY);
       objectMapper.enable(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES);
       objectMapper.enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
-      objectMapper.readValue(feedback.getBytes(), Map.class);
+      objectMapper.readValue(feedback.getBytes(), new TypeReference<Map<String, Object>>() {
+    @Override
+      public Class<?> getType() {
+    // Only allow specific, trusted classes to be deserialized
+    return Map.class;
+        }
+            });
     } catch (IOException e) {
-      return failed(this).feedback(ExceptionUtils.getStackTrace(e)).build();
-    }
-    boolean correctCSRF =
-        requestContainsWebGoatCookie(request.getCookies())
-            && request.getContentType().contains(MediaType.TEXT_PLAIN_VALUE);
-    correctCSRF &= hostOrRefererDifferentHost(request);
-    if (correctCSRF) {
-      String flag = UUID.randomUUID().toString();
-      userSessionData.setValue("csrf-feedback", flag);
-      return success(this).feedback("csrf-feedback-success").feedbackArgs(flag).build();
+    return failed(this).feedback(ExceptionUtils.getStackTrace(e)).build();
+      }
+      boolean correctCSRF =
+      requestContainsWebGoatCookie(request.getCookies())
     }
     return failed(this).build();
   }
