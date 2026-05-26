@@ -58,17 +58,17 @@ public class ProfileZipSlip extends ProfileUploadBase {
     if (!file.getOriginalFilename().toLowerCase().endsWith(".zip")) {
       return failed(this).feedback("path-traversal-zip-slip.no-zip").build();
     } else {
-      return processZipUpload(file, username);
-    }
+      String sanitizedFileName = new File(file.getOriginalFilename()).getName();
+    if (!sanitizedFileName.equals(file.getOriginalFilename())) {
+  return failed(this).feedback("path-traversal-zip-slip.invalid-path").build();
+}
+  return processZipUpload(file, username);
   }
-
-  @SneakyThrows
-  private AttackResult processZipUpload(MultipartFile file, String username) {
+    }
+    
+    @SneakyThrows
+private AttackResult processZipUpload(MultipartFile file, String username) {
     var tmpZipDirectory = Files.createTempDirectory(username);
-    cleanupAndCreateDirectoryForUser(username);
-    var currentImage = getProfilePictureAsBase64(username);
-
-    try {
       var uploadedZipFile = tmpZipDirectory.resolve(file.getOriginalFilename());
       FileCopyUtils.copy(file.getBytes(), uploadedZipFile.toFile());
 
@@ -77,12 +77,12 @@ public class ProfileZipSlip extends ProfileUploadBase {
       while (entries.hasMoreElements()) {
         ZipEntry e = entries.nextElement();
         File f = new File(tmpZipDirectory.toFile(), e.getName());
-        InputStream is = zip.getInputStream(e);
-        Files.copy(is, f.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        String canonicalDirPath = tmpZipDirectory.toFile().getCanonicalPath();
+        String canonicalFilePath = f.getCanonicalPath();
+      if (!canonicalFilePath.startsWith(canonicalDirPath)) {
+throw new SecurityException("Entry is outside the target directory: " + e.getName());
       }
-
-      return isSolved(currentImage, getProfilePictureAsBase64(username));
-    } catch (IOException e) {
+    Files.copy(is, f.toPath(), StandardCopyOption.REPLACE_EXISTING);
       return failed(this).output(e.getMessage()).build();
     }
   }
