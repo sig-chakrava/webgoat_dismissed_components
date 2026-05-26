@@ -38,13 +38,13 @@ public class SqlInjectionLesson4 implements AssignmentEndpoint {
   public AttackResult completed(@RequestParam String query) {
     return injectableQuery(query);
   }
-
+  
   protected AttackResult injectableQuery(String query) {
     try (Connection connection = dataSource.getConnection()) {
-      try (Statement statement =
-          connection.createStatement(TYPE_SCROLL_INSENSITIVE, CONCUR_READ_ONLY)) {
-        statement.executeUpdate(query);
-        connection.commit();
+      String safeQuery = "INSERT INTO tableName (columnName) VALUES (?)";
+      try (PreparedStatement preparedStatement = connection.prepareStatement(safeQuery)) {
+        preparedStatement.setString(1, query);
+        preparedStatement.executeUpdate();
         ResultSet results = statement.executeQuery("SELECT phone from employees;");
         StringBuilder output = new StringBuilder();
         // user completes lesson if column phone exists
