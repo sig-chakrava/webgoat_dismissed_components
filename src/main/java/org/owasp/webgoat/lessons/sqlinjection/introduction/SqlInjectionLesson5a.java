@@ -37,19 +37,19 @@ public class SqlInjectionLesson5a implements AssignmentEndpoint {
   @PostMapping("/SqlInjection/assignment5a")
   @ResponseBody
   public AttackResult completed(
-      @RequestParam String account, @RequestParam String operator, @RequestParam String injection) {
+  @RequestParam String account, @RequestParam String operator, @RequestParam String injection) {
     return injectableQuery(account + " " + operator + " " + injection);
   }
 
-  protected AttackResult injectableQuery(String accountName) {
-    String query = "";
-    try (Connection connection = dataSource.getConnection()) {
-      query =
-          "SELECT * FROM user_data WHERE first_name = 'John' and last_name = '" + accountName + "'";
-      try (Statement statement =
-          connection.createStatement(
-              ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
-        ResultSet results = statement.executeQuery(query);
+protected AttackResult injectableQuery(String accountName) {
+  String query = "SELECT * FROM user_data WHERE first_name = ? and last_name = ?";
+  try (Connection connection = dataSource.getConnection()) {
+    try (PreparedStatement preparedStatement =
+    connection.prepareStatement(
+    query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+      preparedStatement.setString(1, "John");
+      preparedStatement.setString(2, accountName);
+      ResultSet results = preparedStatement.executeQuery();
 
         if ((results != null) && (results.first())) {
           ResultSetMetaData resultsMetaData = results.getMetaData();
