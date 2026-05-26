@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class EncodingAssignment implements AssignmentEndpoint {
 
   public static String getBasicAuth(String username, String password) {
-    return Base64.getEncoder().encodeToString(username.concat(":").concat(password).getBytes());
+    return Base64.getEncoder().encodeToString(encodeForHTML(username).concat(":").concat(encodeForHTML(password)).getBytes(StandardCharsets.UTF_8));
   }
 
   @GetMapping(path = "/crypto/encoding/basic", produces = MediaType.TEXT_HTML_VALUE)
@@ -35,15 +35,15 @@ public class EncodingAssignment implements AssignmentEndpoint {
     if (basicAuth == null) {
       String password =
           HashingAssignment.SECRETS[new Random().nextInt(HashingAssignment.SECRETS.length)];
-      basicAuth = getBasicAuth(username, password);
-      request.getSession().setAttribute("basicAuth", basicAuth);
+          basicAuth = getBasicAuth(encodeForHTML(username), encodeForHTML(password));
+          request.getSession().setAttribute("basicAuth", basicAuth);
     }
-    return "Authorization: Basic ".concat(basicAuth);
-  }
+    return "Authorization: Basic ".concat(encodeForHTML(basicAuth));
+}
 
-  @PostMapping("/crypto/encoding/basic-auth")
-  @ResponseBody
-  public AttackResult completed(
+@PostMapping("/crypto/encoding/basic-auth")
+@ResponseBody
+public AttackResult completed(
       HttpServletRequest request,
       @RequestParam String answer_user,
       @RequestParam String answer_pwd) {
