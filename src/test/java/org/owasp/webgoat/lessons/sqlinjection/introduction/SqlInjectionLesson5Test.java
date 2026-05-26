@@ -17,15 +17,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 public class SqlInjectionLesson5Test extends LessonTest {
-
+  
   @Autowired private LessonDataSource dataSource;
-
+  
   @AfterEach
   public void removeGrant() throws SQLException {
-    dataSource
-        .getConnection()
-        .prepareStatement("revoke select on grant_rights from unauthorized_user cascade")
-        .execute();
+    try (var connection = dataSource.getConnection();
+    var statement = connection.prepareStatement("revoke select on grant_rights from unauthorized_user cascade")) {
+      statement.execute();
+    }
   }
 
   @Test
