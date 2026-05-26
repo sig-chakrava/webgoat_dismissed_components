@@ -36,15 +36,15 @@ public class ProfileUploadFix extends ProfileUploadBase {
       consumes = ALL_VALUE,
       produces = APPLICATION_JSON_VALUE)
   @ResponseBody
-  public AttackResult uploadFileHandler(
-      @RequestParam("uploadedFileFix") MultipartFile file,
-      @RequestParam(value = "fullNameFix", required = false) String fullName,
-      @CurrentUsername String username) {
-    return super.execute(file, fullName != null ? fullName.replace("../", "") : "", username);
-  }
-
-  @GetMapping("/PathTraversal/profile-picture-fix")
-  @ResponseBody
+  public AttackResult uploadFileHandler(  
+  @RequestParam("uploadedFileFix") MultipartFile file,  
+  @RequestParam(value = "fullNameFix", required = false) String fullName,  
+  @CurrentUsername String username) {  
+    return super.execute(file, fullName != null && fullName.matches("^[a-zA-Z0-9._-]+$") ? fullName : "", username);  
+  }  
+  
+  @GetMapping("/PathTraversal/profile-picture-fix")  
+  @ResponseBody  
   public ResponseEntity<?> getProfilePicture(@CurrentUsername String username) {
     return super.getProfilePicture(username);
   }
