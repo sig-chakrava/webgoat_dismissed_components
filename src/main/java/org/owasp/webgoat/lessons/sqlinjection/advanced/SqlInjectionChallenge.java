@@ -43,24 +43,24 @@ public class SqlInjectionChallenge implements AssignmentEndpoint {
   // assignment path is bounded to class so we use different http method :-)
   @ResponseBody
   public AttackResult registerNewUser(
-      @RequestParam("username_reg") String username,
-      @RequestParam("email_reg") String email,
-      @RequestParam("password_reg") String password) {
+  @RequestParam("username_reg") String username,
+  @RequestParam("email_reg") String email,
+  @RequestParam("password_reg") String password) {
     AttackResult attackResult = checkArguments(username, email, password);
 
     if (attackResult == null) {
 
       try (Connection connection = dataSource.getConnection()) {
-        String checkUserQuery =
-            "select userid from sql_challenge_users where userid = '" + username + "'";
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery(checkUserQuery);
-
-        if (resultSet.next()) {
-          attackResult = failed(this).feedback("user.exists").feedbackArgs(username).build();
-        } else {
-          PreparedStatement preparedStatement =
-              connection.prepareStatement("INSERT INTO sql_challenge_users VALUES (?, ?, ?)");
+      String checkUserQuery =
+      "select userid from sql_challenge_users where userid = ?";
+      PreparedStatement preparedStatement = connection.prepareStatement(checkUserQuery);
+      preparedStatement.setString(1, username);
+      ResultSet resultSet = preparedStatement.executeQuery();
+      
+      if (resultSet.next()) {
+        attackResult = failed(this).feedback("user.exists").feedbackArgs(username).build();
+      } else {
+        PreparedStatement preparedStatement =
           preparedStatement.setString(1, username);
           preparedStatement.setString(2, email);
           preparedStatement.setString(3, password);
