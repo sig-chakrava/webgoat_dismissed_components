@@ -24,27 +24,27 @@ public class VulnerableComponentsLesson implements AssignmentEndpoint {
   @PostMapping("/VulnerableComponents/attack1")
   public @ResponseBody AttackResult completed(@RequestParam String payload) {
     XStream xstream = new XStream();
-    xstream.setClassLoader(Contact.class.getClassLoader());
+    xstream.allowTypesByWildcard(new String[]{"org.owasp.webgoat.lessons.vulnerablecomponents.*"});
     xstream.alias("contact", ContactImpl.class);
     xstream.ignoreUnknownElements();
     Contact contact = null;
 
     try {
       if (!StringUtils.isEmpty(payload)) {
-        payload =
-            payload
-                .replace("+", "")
-                .replace("\r", "")
-                .replace("\n", "")
-                .replace("> ", ">")
-                .replace(" <", "<");
-      }
-      contact = (Contact) xstream.fromXML(payload);
-    } catch (Exception ex) {
-      return failed(this).feedback("vulnerable-components.close").output(ex.getMessage()).build();
-    }
+      payload =
+      payload
+      .replace("+", "")
+      .replace("\r", "")
+      .replace("\n", "")
+      .replace("> ", ">")
+      .replace(" <", "<");
+  }
+  contact = (Contact) xstream.fromXML(payload);
+} catch (Exception ex) {
+  return failed(this).feedback("vulnerable-components.close").output(ex.getMessage()).build();
+}
 
-    try {
+try {
       if (null != contact) {
         contact.getFirstName(); // trigger the example like
         // https://x-stream.github.io/CVE-2013-7285.html
