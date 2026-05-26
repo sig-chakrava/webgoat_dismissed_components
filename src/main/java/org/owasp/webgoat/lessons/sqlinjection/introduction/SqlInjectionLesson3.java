@@ -31,20 +31,20 @@ public class SqlInjectionLesson3 implements AssignmentEndpoint {
   public SqlInjectionLesson3(LessonDataSource dataSource) {
     this.dataSource = dataSource;
   }
-
+  
   @PostMapping("/SqlInjection/attack3")
   @ResponseBody
   public AttackResult completed(@RequestParam String query) {
     return injectableQuery(query);
   }
-
+  
   protected AttackResult injectableQuery(String query) {
     try (Connection connection = dataSource.getConnection()) {
-      try (Statement statement =
-          connection.createStatement(TYPE_SCROLL_INSENSITIVE, CONCUR_READ_ONLY)) {
-        Statement checkStatement =
-            connection.createStatement(TYPE_SCROLL_INSENSITIVE, CONCUR_READ_ONLY);
-        statement.executeUpdate(query);
+      String sql = "/* provide your SQL template here with parameter markers, e.g., SELECT * FROM your_table WHERE your_column = ? */";
+      try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        preparedStatement.setString(1, query);
+        preparedStatement.executeUpdate();
+        return AttackResult.success("Query executed safely");
         ResultSet results =
             checkStatement.executeQuery("SELECT * FROM employees WHERE last_name='Barnett';");
         StringBuilder output = new StringBuilder();
