@@ -48,10 +48,10 @@ public class SimpleXXE implements AssignmentEndpoint {
   @PostMapping(path = "xxe/simple", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
   @ResponseBody
   public AttackResult createNewComment(
-      @RequestBody String commentStr, @CurrentUser WebGoatUser user) {
+  @RequestBody String commentStr, @CurrentUser WebGoatUser user) {
     String error = "";
     try {
-      var comment = comments.parseXml(commentStr, false);
+      var comment = comments.parseXmlSecurely(commentStr, false);
       comments.addComment(comment, user, false);
       if (checkSolution(comment)) {
         return success(this).build();
