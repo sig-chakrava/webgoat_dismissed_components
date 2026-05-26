@@ -50,31 +50,31 @@ public class SqlInjectionChallenge implements AssignmentEndpoint {
 
     if (attackResult == null) {
 
-      try (Connection connection = dataSource.getConnection()) {
-        String checkUserQuery =
-            "select userid from sql_challenge_users where userid = '" + username + "'";
+      try (Connection connection = dataSource.getConnection();
+      Statement statement = connection.createStatement();
+      ResultSet resultSet = statement.executeQuery(checkUserQuery)) {
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(checkUserQuery);
 
-        if (resultSet.next()) {
-          attackResult = failed(this).feedback("user.exists").feedbackArgs(username).build();
-        } else {
-          PreparedStatement preparedStatement =
-              connection.prepareStatement("INSERT INTO sql_challenge_users VALUES (?, ?, ?)");
+if (resultSet.next()) {
+  attackResult = failed(this).feedback("user.exists").feedbackArgs(username).build();
+} else {
+  try (PreparedStatement preparedStatement =
+  connection.prepareStatement("INSERT INTO sql_challenge_users VALUES (?, ?, ?)")) {
           preparedStatement.setString(1, username);
           preparedStatement.setString(2, email);
           preparedStatement.setString(3, password);
           preparedStatement.execute();
           attackResult =
-              informationMessage(this).feedback("user.created").feedbackArgs(username).build();
-        }
+          informationMessage(this).feedback("user.created").feedbackArgs(username).build();
+  }
+}
       } catch (SQLException e) {
         attackResult = failed(this).output("Something went wrong").build();
       }
     }
     return attackResult;
-  }
-
+    }
   private AttackResult checkArguments(String username, String email, String password) {
     if (StringUtils.isEmpty(username)
         || StringUtils.isEmpty(email)
