@@ -11072,18 +11072,18 @@ EditSession.$uid = 0;
         var indent = 0;
         while (displayLength - lastSplit > wrapLimit - indent) {
             var split = lastSplit + wrapLimit - indent;
-            if (tokens[split - 1] >= SPACE && tokens[split] >= SPACE) {
-                addSplit(split);
-                continue;
+          if (tokens[split - 1] >= SPACE && tokens[split] >= SPACE) {
+            addSplit(split);
+            continue;
+          }
+          if (tokens[split] == PLACEHOLDER_START || tokens[split] == PLACEHOLDER_BODY) {
+            while (split != lastSplit - 1) {
+              if (tokens[split] == PLACEHOLDER_START) {
+                break;
+              }
+              split--;
             }
-            if (tokens[split] == PLACEHOLDER_START || tokens[split] == PLACEHOLDER_BODY) {
-                for (split; split != lastSplit - 1; split--) {
-                    if (tokens[split] == PLACEHOLDER_START) {
-                        break;
-                    }
-                }
-                if (split > lastSplit) {
-                    addSplit(split);
+            if (split > lastSplit) {
                     continue;
                 }
                 split = lastSplit + wrapLimit;
