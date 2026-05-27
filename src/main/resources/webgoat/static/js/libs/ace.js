@@ -6849,11 +6849,11 @@ var TokenIterator = function(session, initialRow, initialColumn) {
     this.stepBackward = function() {
         this.$tokenIndex -= 1;
 
-        while (this.$tokenIndex < 0) {
-            this.$row -= 1;
-            if (this.$row < 0) {
-                this.$row = 0;
-                return null;
+      while (this.$tokenIndex < 0) {
+        this.$row -= 1;
+        if (this.$row < 0) {
+          this.$row = 0;
+          return null;
             }
 
             this.$rowTokens = this.$session.getTokens(this.$row);
@@ -9471,8 +9471,8 @@ function Folding() {
             var re = new RegExp(type);
             var range = new Range();
             if (dir != 1) {
-                do {
-                    token = iterator.stepBackward();
+            do {
+              token = iterator.stepBackward();
                 } while (token && re.test(token.type));
                 iterator.stepForward();
             }
@@ -9831,7 +9831,7 @@ function BracketMatch() {
                 valueIndex -= 1;
             }
             do {
-                token = iterator.stepBackward();
+              token = iterator.stepBackward();
             } while (token && !typeRe.test(token.type));
 
             if (token == null)
@@ -13391,30 +13391,30 @@ Editor.$uid = 0;
 
             var session = self.session;
             if (!session || !session.bgTokenizer) return;
-
+            
             var pos = self.getCursorPosition();
             var iterator = new TokenIterator(self.session, pos.row, pos.column);
             var token = iterator.getCurrentToken();
 
-            if (!token || !/\b(?:tag-open|tag-name)/.test(token.type)) {
-                session.removeMarker(session.$tagHighlight);
-                session.$tagHighlight = null;
+if (!token || !/\b(?:tag-open|tag-name)/.test(token.type)) {
+  session.removeMarker(session.$tagHighlight);
+  session.$tagHighlight = null;
                 return;
             }
 
-            if (token.type.indexOf("tag-open") != -1) {
-                token = iterator.stepForward();
-                if (!token)
-                    return;
-            }
+if (token && token.type.indexOf("tag-open") != -1) {
+  token = iterator.stepForward();
+  if (!token)
+  return;
+}
 
             var tag = token.value;
             var depth = 0;
             var prevToken = iterator.stepBackward();
 
-            if (prevToken.value == '<'){
-                do {
-                    prevToken = token;
+if (prevToken && prevToken.value == '<'){
+  do {
+    prevToken = token;
                     token = iterator.stepForward();
 
                     if (token && token.value === tag && token.type.indexOf('tag-name') !== -1) {
@@ -13427,17 +13427,17 @@ Editor.$uid = 0;
 
                 } while (token && depth >= 0);
             } else {
-                do {
-                    token = prevToken;
-                    prevToken = iterator.stepBackward();
+            do {
+              token = prevToken;
+              prevToken = iterator.stepBackward();
 
-                    if (token && token.value === tag && token.type.indexOf('tag-name') !== -1) {
-                        if (prevToken.value === '<') {
-                            depth++;
-                        } else if (prevToken.value === '</') {
-                            depth--;
-                        }
-                    }
+if (token && prevToken && token.value === tag && token.type.indexOf('tag-name') !== -1) {
+  if (prevToken.value === '<') {
+    depth++;
+  } else if (prevToken.value === '</') {
+    depth--;
+  }
+}
                 } while (prevToken && depth <= 0);
                 iterator.stepForward();
             }
@@ -14568,7 +14568,7 @@ Editor.$uid = 0;
                     token = prevToken;
                     prevToken = iterator.stepBackward();
 
-                    if (prevToken) {
+if (prevToken) {
                         if (prevToken.type.indexOf('tag-close') !== -1) {
                             range.setEnd(iterator.getCurrentTokenRow(), iterator.getCurrentTokenColumn() + 1);
                         }
