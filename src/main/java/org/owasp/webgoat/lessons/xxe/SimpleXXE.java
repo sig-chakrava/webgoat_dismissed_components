@@ -51,19 +51,19 @@ public class SimpleXXE implements AssignmentEndpoint {
       @RequestBody String commentStr, @CurrentUser WebGoatUser user) {
     String error = "";
     try {
-      var comment = comments.parseXml(commentStr, false);
-      comments.addComment(comment, user, false);
-      if (checkSolution(comment)) {
-        return success(this).build();
-      }
-    } catch (Exception e) {
-      error = ExceptionUtils.getStackTrace(e);
-    }
-    return failed(this).output(error).build();
+      var secureFactory = javax.xml.parsers.DocumentBuilderFactory.newInstance();
+      secureFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+      secureFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        secureFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+      secureFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+    secureFactory.setXIncludeAware(false);
+      secureFactory.setExpandEntityReferences(false);
+    var comment = comments.parseXml(commentStr, secureFactory);
+    comments.addComment(comment, user, false);
+  if (checkSolution(comment)) {
+return success(this).build();
   }
-
-  private boolean checkSolution(Comment comment) {
-    String[] directoriesToCheck =
+    } catch (Exception e) {
         OS.isFamilyMac() || OS.isFamilyUnix()
             ? DEFAULT_LINUX_DIRECTORIES
             : DEFAULT_WINDOWS_DIRECTORIES;
