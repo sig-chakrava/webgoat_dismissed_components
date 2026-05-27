@@ -160,20 +160,20 @@ public class JWTVotesEndpointTest extends LessonTest {
     result =
         mockMvc
             .perform(MockMvcRequestBuilders.get("/JWT/votings").cookie(cookie))
-            .andExpect(status().isOk())
-            .
-            /*andDo(print()).*/ andReturn();
+    .andExpect(status().isOk())
+    .
+    /*andDo(print()).*/ andReturn();
     Object[] nodes =
-        new ObjectMapper().readValue(result.getResponse().getContentAsString(), Object[].class);
+    new ObjectMapper().readValue(result.getResponse().getContentAsString(), Object[].class);
+    if (nodes == null) {
+      throw new IllegalStateException("Failed to parse nodes from the response");
+    }
     int currentNumberOfVotes =
-        (int) findNodeByTitle(nodes, "Admin lost password").get("numberOfVotes");
-
+    (int) findNodeByTitle(nodes, "Admin lost password").get("numberOfVotes");
+    
     mockMvc
-        .perform(MockMvcRequestBuilders.post("/JWT/votings/Admin lost password").cookie(cookie))
-        .andExpect(status().isAccepted());
-    result =
-        mockMvc
-            .perform(MockMvcRequestBuilders.get("/JWT/votings").cookie(cookie))
+    .perform(MockMvcRequestBuilders.post("/JWT/votings/Admin lost password").cookie(cookie))
+    .andExpect(status().isAccepted());
             .andExpect(status().isOk())
             .andReturn();
     nodes = new ObjectMapper().readValue(result.getResponse().getContentAsString(), Object[].class);
@@ -182,13 +182,13 @@ public class JWTVotesEndpointTest extends LessonTest {
   }
 
   private Map<String, Object> findNodeByTitle(Object[] nodes, String title) {
-    for (Object n : nodes) {
-      Map<String, Object> node = (Map<String, Object>) n;
-      if (node.get("title").equals(title)) {
-        return node;
-      }
+  for (Object n : nodes) {
+    Map<String, Object> node = (Map<String, Object>) n;
+    if (node.get("title").equals(title)) {
+      return node;
     }
-    return null;
+  }
+  return null;
   }
 
   @Test
