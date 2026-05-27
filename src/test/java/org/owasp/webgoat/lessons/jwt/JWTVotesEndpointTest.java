@@ -177,21 +177,21 @@ public class JWTVotesEndpointTest extends LessonTest {
             .andExpect(status().isOk())
             .andReturn();
     nodes = new ObjectMapper().readValue(result.getResponse().getContentAsString(), Object[].class);
-    int numberOfVotes = (int) findNodeByTitle(nodes, "Admin lost password").get("numberOfVotes");
-    assertThat(numberOfVotes).isEqualTo(currentNumberOfVotes + 1);
+    Map<String, Object> node = findNodeByTitle(nodes, "Admin lost password");
+    assertNotNull("Node with the specified title was not found", node);
+  int numberOfVotes = (int) node.get("numberOfVotes");
+assertThat(numberOfVotes).isEqualTo(currentNumberOfVotes + 1);
   }
-
-  private Map<String, Object> findNodeByTitle(Object[] nodes, String title) {
-    for (Object n : nodes) {
-      Map<String, Object> node = (Map<String, Object>) n;
+    
+      private Map<String, Object> findNodeByTitle(Object[] nodes, String title) {
+      for (Object n : nodes) {
+        Map<String, Object> node = (Map<String, Object>) n;
       if (node.get("title").equals(title)) {
-        return node;
-      }
+    return node;
     }
-    return null;
   }
-
-  @Test
+return null;
+  }
   public void guestShouldNotBeAbleToVote() throws Exception {
     mockMvc
         .perform(
