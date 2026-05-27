@@ -83,7 +83,7 @@ public class JWTRefreshEndpoint implements AssignmentEndpoint {
   @PostMapping("/JWT/refresh/checkout")
   @ResponseBody
   public ResponseEntity<AttackResult> checkout(
-      @RequestHeader(value = "Authorization", required = false) String token) {
+  @RequestHeader(value = "Authorization", required = false) String token) {
     if (token == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
@@ -92,17 +92,17 @@ public class JWTRefreshEndpoint implements AssignmentEndpoint {
       Claims claims = (Claims) jwt.getBody();
       String user = (String) claims.get("user");
       if ("Tom".equals(user)) {
-        if ("none".equals(jwt.getHeader().get("alg"))) {
-          return ok(success(this).feedback("jwt-refresh-alg-none").build());
-        }
-        return ok(success(this).build());
+      if ("none".equals(jwt.getHeader().get("alg"))) {
+        return ok(success(this).feedback("jwt-refresh-alg-none").build());
       }
-      return ok(failed(this).feedback("jwt-refresh-not-tom").feedbackArgs(user).build());
-    } catch (ExpiredJwtException e) {
-      return ok(failed(this).output(e.getMessage()).build());
-    } catch (JwtException e) {
-      return ok(failed(this).feedback("jwt-invalid-token").build());
+      return ok(success(this).build());
     }
+    return ok(failed(this).feedback("jwt-refresh-not-tom").feedbackArgs("User information removed for security").build());
+  } catch (ExpiredJwtException e) {
+    return ok(failed(this).output("Token has expired").build());
+  } catch (JwtException e) {
+    return ok(failed(this).feedback("jwt-invalid-token").build());
+  }
   }
 
   @PostMapping("/JWT/refresh/newToken")
