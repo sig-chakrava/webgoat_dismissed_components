@@ -47,8 +47,8 @@ public class SqlInjectionLesson9 implements AssignmentEndpoint {
 
   protected AttackResult injectableQueryIntegrity(String name, String auth_tan) {
     StringBuilder output = new StringBuilder();
-    String queryInjection =
-        "SELECT * FROM employees WHERE last_name = '"
+    String queryInjection = 
+    "SELECT * FROM employees WHERE last_name = ?";
             + name
             + "' AND auth_tan = '"
             + auth_tan
@@ -59,16 +59,16 @@ public class SqlInjectionLesson9 implements AssignmentEndpoint {
       int oldSumSalariesOfOtherEmployees = this.getSumSalariesOfOtherEmployees(connection);
       // begin transaction
       connection.setAutoCommit(false);
-      // do injectable query
-      Statement statement = connection.createStatement(TYPE_SCROLL_SENSITIVE, CONCUR_UPDATABLE);
+      // do injectable query using prepared statement
+      PreparedStatement preparedStatement = connection.prepareStatement(queryInjection, TYPE_SCROLL_SENSITIVE, CONCUR_UPDATABLE);
+      preparedStatement.setString(1, name);
       SqlInjectionLesson8.log(connection, queryInjection);
-      statement.execute(queryInjection);
+      preparedStatement.executeQuery();
       // check new sum of salaries other employees and new salaries of John
       int newJohnSalary = this.getJohnSalary(connection);
       int newSumSalariesOfOtherEmployees = this.getSumSalariesOfOtherEmployees(connection);
       if (newJohnSalary > oldMaxSalary
-          && newSumSalariesOfOtherEmployees == oldSumSalariesOfOtherEmployees) {
-        // success commit
+      && newSumSalariesOfOtherEmployees == oldSumSalariesOfOtherEmployees) {
         connection.commit(); // need execute not executeQuery
         connection.setAutoCommit(true);
         output.append(
