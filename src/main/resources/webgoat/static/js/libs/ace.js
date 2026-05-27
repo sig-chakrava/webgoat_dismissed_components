@@ -15264,16 +15264,16 @@ function $updateMarkers(delta) {
             continue; // delta starts after the range
         }
         if (cmp === 0) {
-            if (isInsert) {
-                if (point.bias == 1) {
-                    cmp = 1;
-                }
-                else {
-                    point.bias == -1;
-                    continue;
-                }
+          if (isInsert) {
+            if (point.bias == 1) {
+              cmp = 1;
             }
+            else if (point.bias == -1) {
+              continue;
+            }
+          }
         }
+        var cmp2 = isInsert ? cmp : comparePoints(point, end);
         var cmp2 = isInsert ? cmp : comparePoints(point, end);
         if (cmp2 > 0) {
             point.row += rowShift;
