@@ -25,22 +25,22 @@ public class VulnerableComponentsLesson implements AssignmentEndpoint {
   public @ResponseBody AttackResult completed(@RequestParam String payload) {
     XStream xstream = new XStream();
     xstream.setClassLoader(Contact.class.getClassLoader());
-    xstream.alias("contact", ContactImpl.class);
-    xstream.ignoreUnknownElements();
-    Contact contact = null;
-
+    xstream.addPermission(NoTypePermission.NONE);
+    xstream.allowTypes(new Class[]{Contact.class});
     try {
-      if (!StringUtils.isEmpty(payload)) {
-        payload =
-            payload
-                .replace("+", "")
-                .replace("\r", "")
-                .replace("\n", "")
-                .replace("> ", ">")
-                .replace(" <", "<");
-      }
+      payload =
+      payload
+      .replace("+", "")
+      .replace("\r", "")
+      .replace("\n", "")
+      .replace("> ", ">")
+      .replace(" <", "<");
       contact = (Contact) xstream.fromXML(payload);
     } catch (Exception ex) {
+      return failed(this).feedback("vulnerable-components.close").output(ex.getMessage()).build();
+    }
+
+    try {
       return failed(this).feedback("vulnerable-components.close").output(ex.getMessage()).build();
     }
 
