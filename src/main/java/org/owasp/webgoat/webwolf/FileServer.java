@@ -85,17 +85,17 @@ public class FileServer {
 
   @GetMapping(value = "/files")
   public ModelAndView getFiles(
-      HttpServletRequest request, Authentication authentication, TimeZone timezone) {
+  HttpServletRequest request, Authentication authentication, TimeZone timezone) {
     String username = (null != authentication) ? authentication.getName() : "anonymous";
+    if (!username.matches("^[a-zA-Z0-9_-]+$")) {
+      throw new IllegalArgumentException("Invalid username format.");
+    }
     File destinationDir = new File(fileLocation, username);
+    if (!destinationDir.getCanonicalPath().startsWith(new File(fileLocation).getCanonicalPath())) {
+      throw new SecurityException("Directory traversal attempt detected.");
+    }
 
     ModelAndView modelAndView = new ModelAndView();
-    modelAndView.setViewName("files");
-    File changeIndicatorFile = new File(destinationDir, username + "_changed");
-    if (changeIndicatorFile.exists()) {
-      modelAndView.addObject("uploadSuccess", request.getParameter("uploadSuccess"));
-    }
-    changeIndicatorFile.delete();
 
     record UploadedFile(String name, String size, String link, String creationTime) {}
 
@@ -106,7 +106,7 @@ public class FileServer {
         String size = FileUtils.byteCountToDisplaySize(file.length());
         String link = String.format("files/%s/%s", username, file.getName());
         uploadedFiles.add(
-            new UploadedFile(file.getName(), size, link, getCreationTime(timezone, file)));
+        new UploadedFile(file.getName(), size, link, getCreationTime(timezone, file)));
       }
     }
 
