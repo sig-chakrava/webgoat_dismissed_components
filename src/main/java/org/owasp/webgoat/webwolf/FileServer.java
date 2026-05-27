@@ -87,12 +87,12 @@ public class FileServer {
   public ModelAndView getFiles(
       HttpServletRequest request, Authentication authentication, TimeZone timezone) {
     String username = (null != authentication) ? authentication.getName() : "anonymous";
+    if (!username.matches("^[a-zA-Z0-9]+$")) {
+throw new IllegalArgumentException("Invalid username.");
+    }
     File destinationDir = new File(fileLocation, username);
-
+    
     ModelAndView modelAndView = new ModelAndView();
-    modelAndView.setViewName("files");
-    File changeIndicatorFile = new File(destinationDir, username + "_changed");
-    if (changeIndicatorFile.exists()) {
       modelAndView.addObject("uploadSuccess", request.getParameter("uploadSuccess"));
     }
     changeIndicatorFile.delete();
@@ -103,17 +103,17 @@ public class FileServer {
     File[] files = destinationDir.listFiles(File::isFile);
     if (files != null) {
       for (File file : files) {
-        String size = FileUtils.byteCountToDisplaySize(file.length());
-        String link = String.format("files/%s/%s", username, file.getName());
-        uploadedFiles.add(
-            new UploadedFile(file.getName(), size, link, getCreationTime(timezone, file)));
-      }
+        if (!file.getCanonicalPath().startsWith(destinationDir.getCanonicalPath())) {
+        throw new SecurityException("Potential directory traversal attack detected.");
+        }
+            String size = FileUtils.byteCountToDisplaySize(file.length());
+      String link = String.format("files/%s/%s", username, file.getName());
+    uploadedFiles.add(
+new UploadedFile(file.getName(), size, link, getCreationTime(timezone, file)));
     }
-
+        }
+        
     modelAndView.addObject(
-        "files",
-        uploadedFiles.stream().sorted(comparing(UploadedFile::creationTime).reversed()).toList());
-    modelAndView.addObject("webwolf_url", "http://" + server + ":" + port + contextPath);
     return modelAndView;
   }
 
