@@ -67,7 +67,7 @@ public class BlindSendFileAssignment implements AssignmentEndpoint, Initializabl
   @PostMapping(path = "xxe/blind", consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
   @ResponseBody
   public AttackResult addComment(
-      @RequestBody String commentStr, @AuthenticationPrincipal WebGoatUser user) {
+  @RequestBody String commentStr, @AuthenticationPrincipal WebGoatUser user) {
     var fileContentsForUser = userToFileContents.getOrDefault(user, "");
 
     // Solution is posted by the user as a separate comment
@@ -76,7 +76,7 @@ public class BlindSendFileAssignment implements AssignmentEndpoint, Initializabl
     }
 
     try {
-      Comment comment = comments.parseXml(commentStr, false);
+      Comment comment = comments.parseXml(commentStr, true);
       if (fileContentsForUser.contains(comment.getText())) {
         comment.setText("Nice try, you need to send the file to WebWolf");
       }
