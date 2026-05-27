@@ -11077,23 +11077,23 @@ EditSession.$uid = 0;
                 continue;
             }
             if (tokens[split] == PLACEHOLDER_START || tokens[split] == PLACEHOLDER_BODY) {
-                for (split; split != lastSplit - 1; split--) {
+                while (split != lastSplit - 1) {
                     if (tokens[split] == PLACEHOLDER_START) {
                         break;
                     }
+                    split--;
                 }
                 if (split > lastSplit) {
-                    addSplit(split);
                     continue;
                 }
                 split = lastSplit + wrapLimit;
-                for (split; split < tokens.length; split++) {
+                while (split < tokens.length) {
                     if (tokens[split] != PLACEHOLDER_BODY) {
                         break;
                     }
+                    split++;
                 }
                 if (split == tokens.length) {
-                    break;  // Breaks the while-loop.
                 }
                 addSplit(split);
                 continue;
