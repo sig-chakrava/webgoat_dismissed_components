@@ -40,11 +40,11 @@ public class SqlInjectionLesson3 implements AssignmentEndpoint {
 
   protected AttackResult injectableQuery(String query) {
     try (Connection connection = dataSource.getConnection()) {
-      try (Statement statement =
-          connection.createStatement(TYPE_SCROLL_INSENSITIVE, CONCUR_READ_ONLY)) {
-        Statement checkStatement =
-            connection.createStatement(TYPE_SCROLL_INSENSITIVE, CONCUR_READ_ONLY);
-        statement.executeUpdate(query);
+      String safeQuery = "UPDATE your_table SET your_column = ? WHERE some_condition = ?";
+          try (PreparedStatement preparedStatement = connection.prepareStatement(safeQuery)) {
+        preparedStatement.setString(1, "value_to_update"); // Set appropriate parameter value
+            preparedStatement.setString(2, "condition_value"); // Set appropriate condition value
+        preparedStatement.executeUpdate();
         ResultSet results =
             checkStatement.executeQuery("SELECT * FROM employees WHERE last_name='Barnett';");
         StringBuilder output = new StringBuilder();
