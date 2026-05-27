@@ -97,19 +97,19 @@ public class ProfileUploadRetrieval implements AssignmentEndpoint {
     }
     try {
       var id = request.getParameter("id");
+      var safeId = (id == null || !id.matches("\\d+")) ? String.valueOf(RandomUtils.nextInt(1, 11)) : id;
       var catPicture =
-          new File(catPicturesDirectory, (id == null ? RandomUtils.nextInt(1, 11) : id) + ".jpg");
-
+      new File(catPicturesDirectory, safeId + ".jpg");
+      
       if (catPicture.getName().toLowerCase().contains("path-traversal-secret.jpg")) {
         return ResponseEntity.ok()
-            .contentType(MediaType.parseMediaType(MediaType.IMAGE_JPEG_VALUE))
-            .body(FileCopyUtils.copyToByteArray(catPicture));
+        .contentType(MediaType.parseMediaType(MediaType.IMAGE_JPEG_VALUE))
+        .body(FileCopyUtils.copyToByteArray(catPicture));
       }
-      if (catPicture.exists()) {
+      if (catPicture.exists() && catPicture.getCanonicalPath().startsWith(catPicturesDirectory.getCanonicalPath())) {
         return ResponseEntity.ok()
-            .contentType(MediaType.parseMediaType(MediaType.IMAGE_JPEG_VALUE))
-            .location(new URI("/PathTraversal/random-picture?id=" + catPicture.getName()))
-            .body(Base64.getEncoder().encode(FileCopyUtils.copyToByteArray(catPicture)));
+        .contentType(MediaType.parseMediaType(MediaType.IMAGE_JPEG_VALUE))
+        .location(new URI("/PathTraversal/random-picture?id=" + catPicture.getName()))
       }
       return ResponseEntity.status(HttpStatus.NOT_FOUND)
           .location(new URI("/PathTraversal/random-picture?id=" + catPicture.getName()))
