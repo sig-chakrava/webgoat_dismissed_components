@@ -72,18 +72,18 @@ public class FileServer {
     // DO NOT use multipartFile.transferTo(), see
     // https://stackoverflow.com/questions/60336929/java-nio-file-nosuchfileexception-when-file-transferto-is-called
     try (InputStream is = multipartFile.getInputStream()) {
-      var destinationFile = destinationDir.toPath().resolve(multipartFile.getOriginalFilename());
-      Files.deleteIfExists(destinationFile);
-      Files.copy(is, destinationFile);
+      var originalFilename = Paths.get(multipartFile.getOriginalFilename()).getFileName().toString();
+      var destinationFile = destinationDir.toPath().resolve(originalFilename).normalize();
+      if (!destinationFile.startsWith(destinationDir.toPath().normalize())) {
+    throw new SecurityException("Invalid file path detected.");
     }
-    log.debug("File saved to {}", new File(destinationDir, multipartFile.getOriginalFilename()));
-
-    return new ModelAndView(
-        new RedirectView("files", true),
-        new ModelMap().addAttribute("uploadSuccess", "File uploaded successful"));
-  }
-
-  @GetMapping(value = "/files")
+Files.deleteIfExists(destinationFile);
+    Files.copy(is, destinationFile);
+        }
+        log.debug("File saved to {}", new File(destinationDir, multipartFile.getOriginalFilename()));
+  
+return new ModelAndView(
+  new RedirectView("files", true),
   public ModelAndView getFiles(
       HttpServletRequest request, Authentication authentication, TimeZone timezone) {
     String username = (null != authentication) ? authentication.getName() : "anonymous";
