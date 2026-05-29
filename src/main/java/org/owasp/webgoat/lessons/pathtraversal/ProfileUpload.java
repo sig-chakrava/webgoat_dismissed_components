@@ -40,12 +40,12 @@ public class ProfileUpload extends ProfileUploadBase {
       @RequestParam("uploadedFile") MultipartFile file,
       @RequestParam(value = "fullName", required = false) String fullName,
       @CurrentUsername String username) {
-    return super.execute(file, fullName, username);
-  }
-
-  @GetMapping("/PathTraversal/profile-picture")
-  @ResponseBody
-  public ResponseEntity<?> getProfilePicture(@CurrentUsername String username) {
-    return super.getProfilePicture(username);
-  }
+    if (file == null || file.isEmpty() || !file.getOriginalFilename().matches("^[a-zA-Z0-9._-]+$")) {
+  return AttackResult.error("Invalid file name or empty file.");
 }
+  return super.execute(file, fullName, username);
+  }
+  
+    @GetMapping("/PathTraversal/profile-picture")
+  @ResponseBody
+public ResponseEntity<?> getProfilePicture(@CurrentUsername String username) {
