@@ -46,13 +46,13 @@ public class Servers {
     List<Server> servers = new ArrayList<>();
 
     try (var connection = dataSource.getConnection()) {
-      try (var statement =
-          connection.prepareStatement(
-              "select id, hostname, ip, mac, status, description from SERVERS where status <> 'out"
-                  + " of order' order by "
-                  + column)) {
-        try (var rs = statement.executeQuery()) {
-          while (rs.next()) {
+      if (!List.of("id", "hostname", "ip", "mac", "status", "description").contains(column)) {
+          throw new IllegalArgumentException("Invalid column name.");
+              }
+                  try (var statement =
+                  connection.prepareStatement(
+        "select id, hostname, ip, mac, status, description from SERVERS where status <> 'out of order' order by " + column)) {
+          try (var rs = statement.executeQuery()) {
             Server server =
                 new Server(
                     rs.getString(1),
