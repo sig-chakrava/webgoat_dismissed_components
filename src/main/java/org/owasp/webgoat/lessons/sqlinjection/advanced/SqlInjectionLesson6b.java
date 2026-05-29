@@ -43,10 +43,10 @@ public class SqlInjectionLesson6b implements AssignmentEndpoint {
     try (Connection connection = dataSource.getConnection()) {
       String query = "SELECT password FROM user_system_data WHERE user_name = 'dave'";
       try {
-        Statement statement =
+        try (Statement statement =
             connection.createStatement(
                 ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-        ResultSet results = statement.executeQuery(query);
+        ResultSet results = statement.executeQuery(query)) {
 
         if (results != null && results.first()) {
           password = results.getString("password");
@@ -54,8 +54,8 @@ public class SqlInjectionLesson6b implements AssignmentEndpoint {
       } catch (SQLException sqle) {
         sqle.printStackTrace();
         // do nothing
-      }
-    } catch (Exception e) {
+      } catch (Exception e) {
+    e.printStackTrace();
       e.printStackTrace();
       // do nothing
     }
