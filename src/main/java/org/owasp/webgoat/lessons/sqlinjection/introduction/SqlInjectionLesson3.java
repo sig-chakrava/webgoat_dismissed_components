@@ -40,13 +40,13 @@ public class SqlInjectionLesson3 implements AssignmentEndpoint {
 
   protected AttackResult injectableQuery(String query) {
     try (Connection connection = dataSource.getConnection()) {
-      try (Statement statement =
-          connection.createStatement(TYPE_SCROLL_INSENSITIVE, CONCUR_READ_ONLY)) {
-        Statement checkStatement =
-            connection.createStatement(TYPE_SCROLL_INSENSITIVE, CONCUR_READ_ONLY);
-        statement.executeUpdate(query);
-        ResultSet results =
-            checkStatement.executeQuery("SELECT * FROM employees WHERE last_name='Barnett';");
+      String safeQuery = "/* Specify your query here with placeholders if needed */";
+          try (PreparedStatement preparedStatement = connection.prepareStatement(safeQuery)) {
+        // Set the appropriate parameters on the preparedStatement here
+            int rowsAffected = preparedStatement.executeUpdate();
+        // Use rowsAffected or other results to create the AttackResult
+        return new AttackResult(rowsAffected > 0);
+            }
         StringBuilder output = new StringBuilder();
         // user completes lesson if the department of Tobi Barnett now is 'Sales'
         results.first();
