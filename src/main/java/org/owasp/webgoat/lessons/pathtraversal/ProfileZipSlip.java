@@ -65,19 +65,19 @@ public class ProfileZipSlip extends ProfileUploadBase {
   @SneakyThrows
   private AttackResult processZipUpload(MultipartFile file, String username) {
     var tmpZipDirectory = Files.createTempDirectory(username);
-    cleanupAndCreateDirectoryForUser(username);
-    var currentImage = getProfilePictureAsBase64(username);
-
-    try {
-      var uploadedZipFile = tmpZipDirectory.resolve(file.getOriginalFilename());
-      FileCopyUtils.copy(file.getBytes(), uploadedZipFile.toFile());
-
-      ZipFile zip = new ZipFile(uploadedZipFile.toFile());
-      Enumeration<? extends ZipEntry> entries = zip.entries();
-      while (entries.hasMoreElements()) {
-        ZipEntry e = entries.nextElement();
-        File f = new File(tmpZipDirectory.toFile(), e.getName());
-        InputStream is = zip.getInputStream(e);
+    try (var zipInputStream = new ZipInputStream(file.getInputStream())) {
+    ZipEntry entry;
+while ((entry = zipInputStream.getNextEntry()) != null) {
+    String canonicalPath = new File(tmpZipDirectory.toFile(), entry.getName()).getCanonicalPath();
+      if (!canonicalPath.startsWith(tmpZipDirectory.toFile().getCanonicalPath())) {
+      return failed(this).feedback("path-traversal-zip-slip.invalid-path").build();
+}
+      File f = new File(tmpZipDirectory.toFile(), entry.getName());
+      Files.copy(zipInputStream, f.toPath(), StandardCopyOption.REPLACE_EXISTING);
+      }
+        }
+        return success(this).feedback("path-traversal-zip-slip.success").build();
+        }
         Files.copy(is, f.toPath(), StandardCopyOption.REPLACE_EXISTING);
       }
 
