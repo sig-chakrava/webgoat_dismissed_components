@@ -113,7 +113,7 @@ public class SqlInjectionLesson9 implements AssignmentEndpoint {
 
   private ResultSet getEmployeesDataOrderBySalaryDesc(Connection connection) throws SQLException {
     String query = "SELECT * FROM employees ORDER BY salary DESC";
-    Statement statement = connection.createStatement(TYPE_SCROLL_SENSITIVE, CONCUR_UPDATABLE);
+    try (Statement statement = connection.createStatement(TYPE_SCROLL_SENSITIVE, CONCUR_UPDATABLE)) {
     return statement.executeQuery(query);
   }
 }
