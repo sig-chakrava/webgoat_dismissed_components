@@ -6,7 +6,7 @@
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
 
 This document describes how you can contribute to WebGoat. Please read it carefully.
-
+Hey
 **Table of Contents**
 
 * [How to Contribute to the Project](#how-to-contribute-to-the-project)
