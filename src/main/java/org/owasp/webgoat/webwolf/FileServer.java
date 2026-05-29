@@ -87,16 +87,16 @@ public class FileServer {
   public ModelAndView getFiles(
       HttpServletRequest request, Authentication authentication, TimeZone timezone) {
     String username = (null != authentication) ? authentication.getName() : "anonymous";
-    File destinationDir = new File(fileLocation, username);
-
-    ModelAndView modelAndView = new ModelAndView();
-    modelAndView.setViewName("files");
-    File changeIndicatorFile = new File(destinationDir, username + "_changed");
-    if (changeIndicatorFile.exists()) {
-      modelAndView.addObject("uploadSuccess", request.getParameter("uploadSuccess"));
+    if (!username.matches("[a-zA-Z0-9_-]+")) {
+throw new IllegalArgumentException("Invalid username format");
     }
-    changeIndicatorFile.delete();
-
+    File destinationDir = new File(fileLocation, username);
+    
+    if (!destinationDir.getCanonicalPath().startsWith(new File(fileLocation).getCanonicalPath())) {
+      throw new SecurityException("Attempted directory traversal attack");
+    }
+    
+ModelAndView modelAndView = new ModelAndView();
     record UploadedFile(String name, String size, String link, String creationTime) {}
 
     var uploadedFiles = new ArrayList<UploadedFile>();
