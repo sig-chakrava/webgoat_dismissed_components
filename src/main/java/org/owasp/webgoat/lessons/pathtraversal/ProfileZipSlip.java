@@ -72,15 +72,15 @@ public class ProfileZipSlip extends ProfileUploadBase {
       var uploadedZipFile = tmpZipDirectory.resolve(file.getOriginalFilename());
       FileCopyUtils.copy(file.getBytes(), uploadedZipFile.toFile());
 
-      ZipFile zip = new ZipFile(uploadedZipFile.toFile());
+      try (ZipFile zip = new ZipFile(uploadedZipFile.toFile())) {
       Enumeration<? extends ZipEntry> entries = zip.entries();
       while (entries.hasMoreElements()) {
         ZipEntry e = entries.nextElement();
         File f = new File(tmpZipDirectory.toFile(), e.getName());
-        InputStream is = zip.getInputStream(e);
+        try (InputStream is = zip.getInputStream(e)) {
         Files.copy(is, f.toPath(), StandardCopyOption.REPLACE_EXISTING);
       }
-
+}
       return isSolved(currentImage, getProfilePictureAsBase64(username));
     } catch (IOException e) {
       return failed(this).output(e.getMessage()).build();
