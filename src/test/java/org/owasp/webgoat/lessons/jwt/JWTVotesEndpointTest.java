@@ -177,23 +177,23 @@ public class JWTVotesEndpointTest extends LessonTest {
             .andExpect(status().isOk())
             .andReturn();
     nodes = new ObjectMapper().readValue(result.getResponse().getContentAsString(), Object[].class);
-    int numberOfVotes = (int) findNodeByTitle(nodes, "Admin lost password").get("numberOfVotes");
+    Map<String, Object> foundNode = findNodeByTitle(nodes, "Admin lost password");
+    if (foundNode == null) {
+  throw new IllegalStateException("Node with the specified title was not found");
+}
+  int numberOfVotes = (int) foundNode.get("numberOfVotes");
     assertThat(numberOfVotes).isEqualTo(currentNumberOfVotes + 1);
-  }
-
-  private Map<String, Object> findNodeByTitle(Object[] nodes, String title) {
-    for (Object n : nodes) {
-      Map<String, Object> node = (Map<String, Object>) n;
-      if (node.get("title").equals(title)) {
-        return node;
       }
-    }
-    return null;
+      
+        private Map<String, Object> findNodeByTitle(Object[] nodes, String title) {
+      for (Object n : nodes) {
+    Map<String, Object> node = (Map<String, Object>) n;
+    if (node.get("title").equals(title)) {
+  return node;
+}
   }
-
-  @Test
-  public void guestShouldNotBeAbleToVote() throws Exception {
-    mockMvc
+  return null;
+    }
         .perform(
             MockMvcRequestBuilders.post("/JWT/votings/Admin lost password")
                 .cookie(new Cookie("access_token", "")))
