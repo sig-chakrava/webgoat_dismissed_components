@@ -322,7 +322,7 @@ if ([1,2].splice(0).length != 2) {
         lengthBefore = array.length; //46
         array.splice(5, 0, "XXX"); // add one element
 
-        lengthBefore + 1 == array.length
+        
 
         if (lengthBefore + 1 == array.length) {
             return true;// has right splice implementation without bugs
