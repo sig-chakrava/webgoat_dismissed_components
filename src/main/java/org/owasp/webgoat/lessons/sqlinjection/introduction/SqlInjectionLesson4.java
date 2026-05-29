@@ -41,11 +41,11 @@ public class SqlInjectionLesson4 implements AssignmentEndpoint {
 
   protected AttackResult injectableQuery(String query) {
     try (Connection connection = dataSource.getConnection()) {
-      try (Statement statement =
-          connection.createStatement(TYPE_SCROLL_INSENSITIVE, CONCUR_READ_ONLY)) {
-        statement.executeUpdate(query);
-        connection.commit();
-        ResultSet results = statement.executeQuery("SELECT phone from employees;");
+      String sql = "YOUR_SQL_STATEMENT_WITH_PLACEHOLDER"; // Replace with actual SQL statement with placeholders
+          try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        // Use preparedStatement.setString(index, value) or other relevant setter methods to safely bind parameters
+        preparedStatement.setString(1, query); // Update based on your SQL placeholders and input
+        preparedStatement.executeUpdate();
         StringBuilder output = new StringBuilder();
         // user completes lesson if column phone exists
         if (results.first()) {
