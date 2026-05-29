@@ -137,11 +137,11 @@ public class SqlInjectionLesson8 implements AssignmentEndpoint {
     String logQuery =
         "INSERT INTO access_log (time, action) VALUES ('" + time + "', '" + action + "')";
 
-    try {
-      Statement statement = connection.createStatement(TYPE_SCROLL_SENSITIVE, CONCUR_UPDATABLE);
+    try (Statement statement = connection.createStatement(TYPE_SCROLL_SENSITIVE, CONCUR_UPDATABLE)) {
       statement.executeUpdate(logQuery);
-    } catch (SQLException e) {
-      System.err.println(e.getMessage());
+      } catch (SQLException e) {
+    System.err.println(e.getMessage());
+      }
     }
   }
 }
